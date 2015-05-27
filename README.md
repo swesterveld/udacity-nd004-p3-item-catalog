@@ -1,4 +1,3 @@
-rdb-fullstack
-=============
+# Project "Item Catalog"
 
-Common code for the Relational Databases and Full Stack Fundamentals courses
+This code is a WIP for ***[Udacity Full Stack Web Developer Nanodegree](https://www.udacity.com/course/nd004) - Project 3: Item Catalog***.
