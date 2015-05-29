@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+{% block content %}
+{% include "header.html" %}
+
+<h2>{{item}}</h2>
+
+Category: {{category}}
+
+{% if item.description %}
+<p>
+item.description
+</p>
+{% endif %}
+
+{% endblock %}

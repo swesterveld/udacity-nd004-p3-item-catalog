@@ -1,0 +1,58 @@
+{% extends "index.html" %}
+{% block content %}
+    <div>
+        <form action="#" method="post">
+            <div>
+                <label for="category">Category &amp; Style:</label>
+                <select name="category" required>
+                    <!-- TODO: generate list based on info in database -->
+                    <optgroup label="Belgian-Style Ales">
+                        <option value="1">Abbey Dubbel</option>
+                        <option value="2">Abbey Tripel</option>
+                        <option value="3">Abt/Quadrupel</option>
+                    </optgroup>
+                    <optgroup label="Sour Beer">
+                        <option value="4">Berliner Weisse</option>
+                        <option value="5">Lambic Style - Faro</option>
+                        <option value="6">Lambic Style - Fruit</option>
+                    </optgroup>
+                    <optgroup label="Anglo-American Ales">
+                        <option value="7">Altbier</option>
+                        <option value="8">Amber Ale</option>
+                        <option value="9">American Pale Ale</option>
+                    </optgroup>
+                    <optgroup label="Stouts and Porters">
+                        <option value="10">Baltic Porter</option>
+                        <option value="11">Black IPA</option>
+                        <option value="12">Dry Stout</option>
+                    </optgroup>
+                    <optgroup label="Wheat Beer">
+                        <option value="13">Dunkelweizen</option>
+                        <option value="14">German Hefeweizen</option>
+                        <option value="15">German Kritallweizen</option>
+                    </optgroup>
+                    <optgroup label="Lager">
+                        <option value="16">Amber Later/Vienna</option>
+                        <option value="17">California Common</option>
+                        <option value="18">Czech Pilsner (Světlý)</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div>
+                <p>
+                <label for="name">Name:</label>
+                <input type="text" name="name" placeholder="Name of the beer" required>
+                </p>
+
+                <p>
+                <label for=description">Description:</label>
+                <textarea name="description" placeholder="Description of the beer..."></textarea>
+                </p>
+
+
+                <input type="submit" value="add">
+            </div>
+        </form>
+    </div>
+{% endblock %}
