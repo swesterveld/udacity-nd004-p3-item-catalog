@@ -4,14 +4,24 @@
 
 This homepage will show all current categories along with the latest added items. After loggin in, a user has the ability to add, update or delete item info.
 
-<!-- test with (sub-)categories -->
-{% for super in categories if super.parent_id == None %}
-    <p>{{ super.name }}</p>
-    <ul>
-    {% for sub in categories if sub.parent_id == super.id %}
-        <li>{{ sub.name }} </li>
+<div id="categories">
+    <h2>Categories</h2>
+    <!-- test with (sub-)categories -->
+    {% for super in categories if super.parent_id == None %}
+        <p>{{ super.name }}</p>
+        <ul>
+        {% for sub in categories if sub.parent_id == super.id %}
+            <li><a href="#">{{ sub.name }}</a></li>
+        {% endfor %}
+        </ul>
     {% endfor %}
-    </ul>
-{% endfor %}
+</div>
+<div>
+    <h2>Latest items</h2>
+    <ul>
+    {% for key, value in latest_items.iteritems() %}
+        <li><a href="#">{{value}}</a> ({{key}})</li>
+    {% endfor %}
+</ul>
 
 {% endblock %}

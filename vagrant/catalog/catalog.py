@@ -22,7 +22,10 @@ def showCatalog():
     the latest added items. After logging in, a user has the ability to add,
     update or delete item info.'''
     categories = session.query(Category).all()
-    return render_template('catalog.html', categories=categories)
+    latest_items = {'India Pale Ale (IPA)': 'Three Floyds BrooDoo',
+            'Belgian Ale': 'Orval',
+            'Belgian Strong Ale': 'Westvleteren Extra 8'}
+    return render_template('catalog.html', categories=categories, latest_items=latest_items)
 
 
 @app.route('/catalog.json')
