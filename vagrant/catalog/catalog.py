@@ -1,8 +1,19 @@
 from flask import Flask, render_template
 
+# Imports for CRUD operations on database
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database_setup import Base, Category, Item, User
+
 app = Flask(__name__)
 app.debug = True
 app.secret_key = """M}XUZoTl+U3]j`Gk&d5ysi5)}GTIDA?9"""
+
+# Create session and connect to the database
+engine = create_engine('sqlite:///catalog.db')
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
 @app.route('/')
 @app.route('/catalog/')
@@ -10,7 +21,8 @@ def showCatalog():
     '''This is the homepage which will show all current categories along with
     the latest added items. After logging in, a user has the ability to add,
     update or delete item info.'''
-    return render_template('catalog.html')
+    categories = session.query(Category).all()
+    return render_template('catalog.html', categories=categories)
 
 
 @app.route('/catalog.json')
