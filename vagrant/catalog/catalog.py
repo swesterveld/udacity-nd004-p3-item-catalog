@@ -22,10 +22,7 @@ def showCatalog():
     the latest added items. After logging in, a user has the ability to add,
     update or delete item info.'''
     categories = session.query(Category).all()
-    latest_items = {'India Pale Ale (IPA)': 'Three Floyds BrooDoo',
-            'Belgian Ale': 'Orval',
-            'Belgian Strong Ale': 'Westvleteren Extra 8'}
-    # TODO: implement with items from DB
+    latest_items = session.query(Item).limit(3)
     return render_template('catalog.html', categories=categories, latest_items=latest_items)
 
 
@@ -42,19 +39,18 @@ def showCategory(category_id):
     the items available for that category.'''
     current_category = session.query(Category).filter_by(id=category_id).one()
     categories = session.query(Category).all()
-    items = ['Westvleteren Extra 8',
-            'Struise Pannepot',
-            'Rochefort Trappistes 8']
-    # TODO: implement with items from DB
+    items = session.query(Item).limit(3)
     return render_template('category.html', categories=categories,
             category=current_category, items=items)
 
 
-@app.route('/catalog/<category>/<item>/')
-def showItem(category, item):
+@app.route('/catalog/<int:category_id>/<int:item_id>/')
+def showItem(category_id, item_id):
     ''' When a specific item has been selected, this page will show all
     information of that item. After logging in, a user has the ability to
     select an item to update or delete its item info.'''
+    category = session.query(Category).filter_by(id=category_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
     return render_template('item.html', category=category, item=item)
 
 

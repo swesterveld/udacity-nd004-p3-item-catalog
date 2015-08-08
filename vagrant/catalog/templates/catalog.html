@@ -12,6 +12,7 @@ This homepage will show all current categories along with the latest added items
         <ul>
         {% for sub in categories if sub.parent_id == super.id %}
             <li><a href="#">{{ sub.name }}</a></li>
+            {% import pdb; pdb.set_trace() %}
         {% endfor %}
         </ul>
     {% endfor %}
@@ -19,8 +20,8 @@ This homepage will show all current categories along with the latest added items
 <div>
     <h2>Latest items</h2>
     <ul>
-    {% for key, value in latest_items.iteritems() %}
-        <li><a href="#">{{value}}</a> ({{key}})</li>
+    {% for item in latest_items %}
+        <li><a href="#">{{item.name}}</a> ({{item.category.name}})</li>
     {% endfor %}
 </ul>
 
