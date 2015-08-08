@@ -6,6 +6,11 @@
 	</head>
 	<body>
 		<div class="container">
+            <div id="header">
+                {% block header %}
+                <h1>Beer Catalog</h1>
+                {% endblock header %}
+            </div><!-- header -->
             <div id="content">
                 {% block content %}
                 {% endblock content %}
