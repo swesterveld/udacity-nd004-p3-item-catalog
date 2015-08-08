@@ -43,11 +43,18 @@ categories = (
     {
         'id': 7,
         'name': u'Abbey Dubbel',
+        'description': ' '.join((
+            'These are dark, malty, yeasty strong ales in the Trappist',
+            'tradition, but produced (mainly) by secular brewers. Dubbels',
+            'range between 6.5-8% abv, and have a dark brown, cloudy',
+            'colour, and a palate mixing malt, a lush fruitiness, and',
+            'yeast. They are typically bottle-conditioned.')),
         'parent_id': 1
     },
     {
         'id': 8,
         'name': u'Abbey Tripel',
+        'description': 'Like other abbey ales, Tripels are strong, yeasty-malty beers. But they are also pale, and have a notable hop profile. Hop bitterness may be higher than a typical abbey ale, up to 45IBUs. But the finish is where the hops really shine, as tripels should finish fairly dry. Otherwise, maltiness is still essential to the style, and the assertive yeast note typical of all abbey ales will be more apparent in tripels, since they do not have the rich dark malts to distract the palate. Alcohol flavours feature more prominently in Tripels that in just about any other style.',
         'parent_id': 1
     },
     {
@@ -390,7 +397,10 @@ categories = (
 for c in categories:
     print 'adding category: %s' % c
     category = Category(id=c['id'], name=c['name'])
-    if 'parent_id' in c.keys():
+    if 'description' in c.keys():
+        print '    description: %s' % c['description']
+        category.description = c['description']
+    elif 'parent_id' in c.keys():
         parent = session.query(Category).filter_by(id=c['parent_id']).one()
         print '    parent: %s' % parent
         category.parent_id = parent.id

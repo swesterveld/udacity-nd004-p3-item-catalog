@@ -22,6 +22,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
+    description = Column(String, nullable=True)
     parent_id = Column(Integer, ForeignKey('category.id'), nullable=True)
     parent = relationship('Category')
 

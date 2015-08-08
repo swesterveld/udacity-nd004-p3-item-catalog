@@ -1,19 +1,36 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
+
 {% block content %}
-{% include "header.html" %}
 
-<h2>{{category}}</h2>
+This view will show all items available for a specific (selected) category.
 
-{% if category.description %}
-<p>
-{{category.description}}
-</p>
-{% endif %}
+<div id="categories">
+    <h2>Categories</h2>
+    <!-- test with (sub-)categories -->
+    {% for super in categories if super.parent_id == None %}
+        <p>{{ super.name }}</p>
+        <ul>
+        {% for sub in categories if sub.parent_id == super.id %}
+            <li><a href="#">{{ sub.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
+</div>
 
-<ul>
-{% for i in items %}
-<li>{{i}}</li>
-{% endfor %}
-</ul>
+<div>
+    <h2>{{category.name}}</h2>
+
+    {% if category.description %}
+    <p>
+    {{category.description}}
+    </p>
+    {% endif %}
+
+    <ul>
+    {% for item in items %}
+    <li><a href="#">{{item}}</a></li>
+    {% endfor %}
+    </ul>
+</div>
 
 {% endblock %}

@@ -25,6 +25,7 @@ def showCatalog():
     latest_items = {'India Pale Ale (IPA)': 'Three Floyds BrooDoo',
             'Belgian Ale': 'Orval',
             'Belgian Strong Ale': 'Westvleteren Extra 8'}
+    # TODO: imlement with items from DB
     return render_template('catalog.html', categories=categories, latest_items=latest_items)
 
 
@@ -34,14 +35,25 @@ def showCatalogJSON():
     return "This is the JSON endpoint provided by the application."
 
 
-@app.route('/catalog/<category>/')
-@app.route('/catalog/<category>/items/')
-def showCategory(category):
+@app.route('/catalog/<int:category_id>/')
+@app.route('/catalog/<int:category_id>/items/')
+def showCategory(category_id):
     ''' When a specific category has been selected, this page will show all
     the items available for that category.'''
-    items = [char for char in category] # just for testing
+    #current_category = 'some category'
+    current_category = session.query(Category).filter_by(id=category_id).one()
+    print current_category.name
+    print current_category.id
+    print current_category.description
+    #import pdb; pdb.set_trace()
+    # TODO: get right category from <category>
+    categories = session.query(Category).all()
+    items = ['Westvleteren Extra 8',
+            'Struise Pannepot',
+            'Rochefort Trappistes 8']
     # TODO: imlement with items from DB
-    return render_template('category.html', category=category, items=items)
+    return render_template('category.html', categories=categories,
+            category=current_category, items=items)
 
 
 @app.route('/catalog/<category>/<item>/')
