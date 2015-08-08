@@ -391,9 +391,9 @@ for c in categories:
     print 'adding category: %s' % c
     category = Category(id=c['id'], name=c['name'])
     if 'parent_id' in c.keys():
-        parent = session.query(Category).filter_by(id=c['parent_id']).all()
+        parent = session.query(Category).filter_by(id=c['parent_id']).one()
         print '    parent: %s' % parent
-        category.parent = parent
+        category.parent_id = parent.id
 
     session.add(category)
 

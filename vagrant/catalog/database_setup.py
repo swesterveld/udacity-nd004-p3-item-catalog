@@ -16,6 +16,8 @@ class User(Base):
 
 
 class Category(Base):
+    '''Categories can have sub categories. The parent of a sub category is a
+    category.'''
     __tablename__ = 'category'
 
     id = Column(Integer, primary_key=True)
