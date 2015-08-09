@@ -13,7 +13,7 @@ This view will show all items available for a specific (selected) category.
 
     <div class="row">
         <div>
-            <!-- test with (sub-)categories -->
+            <!-- make a list with (sub-)categories -->
             {% for super in categories if super.parent_id == None %}
                 <p>{{ super.name }}</p>
                 <ul>
