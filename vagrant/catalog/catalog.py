@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, url_for
 
 # Imports for CRUD operations on database
 from sqlalchemy import create_engine
@@ -39,7 +39,7 @@ def showCategory(category_id):
     the items available for that category.'''
     current_category = session.query(Category).filter_by(id=category_id).one()
     categories = session.query(Category).all()
-    items = session.query(Item).limit(3)
+    items = session.query(Item).filter_by(category_id=category_id).limit(3)
     return render_template('category.html', categories=categories,
             category=current_category, items=items)
 
