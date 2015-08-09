@@ -2,8 +2,6 @@
 
 {% block content %}
 
-This view will show all items available for a specific (selected) category.
-
 <div class="col-md-3" id="categories">
     <div class="row">
         <div>
@@ -15,7 +13,7 @@ This view will show all items available for a specific (selected) category.
         <div>
             <!-- make a list with (sub-)categories -->
             {% for super in categories if super.parent_id == None %}
-                <p>{{ super.name }}</p>
+                <h3>{{ super.name }}</h3>
                 <ul>
                 {% for sub in categories if sub.parent_id == super.id %}
                     <li><a href="{{ url_for('showCategory', category_id=sub.id) }}">{{ sub.name }}</a></li>
