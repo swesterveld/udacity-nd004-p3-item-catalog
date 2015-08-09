@@ -22,7 +22,7 @@ def showCatalog():
     the latest added items. After logging in, a user has the ability to add,
     update or delete item info.'''
     categories = session.query(Category).all()
-    latest_items = session.query(Item).limit(3)
+    latest_items = session.query(Item).order_by('-Item.id').limit(10)
     return render_template('catalog.html', categories=categories, latest_items=latest_items)
 
 
@@ -39,7 +39,7 @@ def showCategory(category_id):
     the items available for that category.'''
     current_category = session.query(Category).filter_by(id=category_id).one()
     categories = session.query(Category).all()
-    items = session.query(Item).filter_by(category_id=category_id).limit(3)
+    items = session.query(Item).filter_by(category_id=category_id).order_by('Item.name')
     return render_template('category.html', categories=categories,
             category=current_category, items=items)
 
