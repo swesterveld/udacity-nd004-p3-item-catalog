@@ -13,15 +13,15 @@ This homepage will show all current categories along with the latest added items
 
     <div class="row">
         <div>
-            <!-- test with (sub-)categories -->
-            {% for super in categories if super.parent_id == None %}
-                <p>{{ super.name }}</p>
-                <ul>
-                {% for sub in categories if sub.parent_id == super.id %}
-                    <li><a href="{{ url_for('showCategory', category_id=sub.id) }}">{{ sub.name }}</a></li>
-                {% endfor %}
-                </ul>
+        <!-- make a list with (sub-)categories -->
+        {% for super in categories if super.parent_id == None %}
+            <h3>{{ super.name }}</h3>
+            <ul>
+            {% for sub in categories if sub.parent_id == super.id %}
+                <li><a href="{{ url_for('showCategory', category_id=sub.id) }}">{{ sub.name }}</a></li>
             {% endfor %}
+            </ul>
+        {% endfor %}
         </div>
     </div>
 </div>
