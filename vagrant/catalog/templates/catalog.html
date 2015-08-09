@@ -12,12 +12,12 @@ This homepage will show all current categories along with the latest added items
         <ul>
         {% for sub in categories if sub.parent_id == super.id %}
             <li><a href="#">{{ sub.name }}</a></li>
-            {% import pdb; pdb.set_trace() %}
         {% endfor %}
         </ul>
     {% endfor %}
 </div>
 <div>
+    <a href="#">Add Item</a>
     <h2>Latest items</h2>
     <ul>
     {% for item in latest_items %}
