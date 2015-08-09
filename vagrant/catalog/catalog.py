@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 
 # Imports for CRUD operations on database
 from sqlalchemy import create_engine
@@ -28,8 +28,8 @@ def showCatalog():
 
 @app.route('/catalog.json')
 def showCatalogJSON():
-    # TODO: implement
-    return "This is the JSON endpoint provided by the application."
+    categories = session.query(Category).all()
+    return jsonify(categories= [c.serialize for c in categories])
 
 
 @app.route('/catalog/<int:category_id>/')
@@ -58,19 +58,23 @@ def showItem(category_id, item_id):
 def newItem():
     '''After logging in, this page gives the user the ability to add an item
     with item info.'''
-    return render_template('item_new.html')
+    categories = session.query(Category).all()
+    return render_template('item_new.html', categories=categories)
 
 
-@app.route('/catalog/<item>/edit/')
-def editItem(item):
+@app.route('/catalog/<item_id>/edit/')
+def editItem(item_id):
     '''After logging in, this page gives the user the ability to update the item info.'''
-    return render_template('item_edit.html', item=item)
+    categories = session.query(Category).all()
+    item = session.query(Item).filter_by(id=item_id).one()
+    return render_template('item_edit.html', categories=categories, item=item)
 
 
-@app.route('/catalog/<item>/delete/')
-def deleteItem(item):
+@app.route('/catalog/<int:item_id>/delete/')
+def deleteItem(item_id):
     '''After logging in, this page gives the user the ability to delete the
     item info.'''
+    item = session.query(Item).filter_by(id=item_id).one()
     return render_template('item_delete.html', item=item)
 
 
