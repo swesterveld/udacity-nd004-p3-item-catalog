@@ -1,35 +1,36 @@
-        <div>
-            <label for="category">Category &amp; Style:</label>
-            <select name="category" size="10" required>
-                <!-- fill drop-down menu with (sub-)categories -->
-                {% for super in categories if super.parent_id == None %}
-                    <optgroup label="{{super.name}}">
-                    {% for sub in categories if sub.parent_id == super.id %}
-                    <option value="{{sub.id}}"{% if item and item.category_id == sub.id %} selected{% endif %}>{{sub.name}}</option>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                {% if item %}
+                <input class="form-control" type="text" name="name" value="{{item.name}}" required>
+                {% else %}
+                <input class="form-control" type="text" name="name" placeholder="Name of the beer" required>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category &amp; Style:</label>
+                <select class="form-control" name="category" size="10" required>
+                    <!-- fill drop-down menu with (sub-)categories -->
+                    {% for super in categories if super.parent_id == None %}
+                        <optgroup label="{{super.name}}">
+                        {% for sub in categories if sub.parent_id == super.id %}
+                        <option value="{{sub.id}}"{% if item and item.category_id == sub.id %} selected{% endif %}>{{sub.name}}</option>
+                        {% endfor %}
+                    </optgroup>
                     {% endfor %}
-                </optgroup>
-                {% endfor %}
-            </select>
-        </div>
+                </select>
+            </div>
 
-        <div>
-            <p>
-            <label for="name">Name:</label>
-            {% if item %}
-            <input type="text" name="name" value="{{item.name}}" required>
-            {% else %}
-            <input type="text" name="name" placeholder="Name of the beer" required>
-            {% endif %}
-            </p>
+            <div class="form-group">
+                <label for=description">Description:</label>
+                {% if item %}
+                <textarea class="form-control" name="description">{{item.description}}</textarea>
+                {% else %}
+                <textarea class="form-control" name="description" placeholder="Description of the beer..."></textarea>
+                {% endif %}
+            </div>
 
-            <p>
-            <label for=description">Description:</label>
-            {% if item %}
-            <textarea name="description">{{item.description}}</textarea>
-            {% else %}
-            <textarea name="description" placeholder="Description of the beer..."></textarea>
-            {% endif %}
-            </p>
-
-            <input type="submit" value="Add">
+            <button type="submit" class="btn btn-default">Save</button>
         </div>
