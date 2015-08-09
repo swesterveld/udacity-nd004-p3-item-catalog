@@ -61,12 +61,12 @@ def newItem():
     categories = session.query(Category).all()
 
     if request.method == 'POST':
-        newObj = Item(name = request.form['name'],
+        newItem = Item(name = request.form['name'],
                 category_id = request.form['category'],
                 description = request.form['description'])
-        session.add(newObj)
-        cat = session.query(Category).filter_by(id=newObj.category_id).one()
-        flash('New beer "%s" has been successfully added to the category "%s". Cheers!' % (newObj.name, cat.name))
+        session.add(newItem)
+        newItemCategory = session.query(Category).filter_by(id=newItem.category_id).one()
+        flash('New beer "%s" has been successfully added to the category "%s". Cheers!' % (newItem.name, newItemCategory.name))
         session.commit()
         return redirect(url_for('showCatalog'))
     else:
