@@ -2,22 +2,31 @@
 <html lang="en">
 	<head>
         <title>Beer Catalog</title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+        <!-- Own CSS to specify some custom styles -->
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 	</head>
 	<body>
 		<div class="container">
-            <div id="header">
+            <div class="row" id="header">
                 {% block header %}
                 <h1><a href="{{ url_for('showCatalog') }}">Beer Catalog</a></h1>
                 {% endblock header %}
             </div><!-- header -->
-            <div id="content">
+            <div class="row" id="content">
                 {% block content %}
                 {% endblock content %}
             </div><!-- #content -->
-            <div id="footer">
+            <div class="row" id="footer">
                 {% block footer %}
-                    &copy; Copyright 2015
+                <div class="col-md-12 text-center">
+                    &copy; Copyright 2015 - Carefully Crafted by <a href="http://github.com/swesterveld/">Sil Westerveld</a>
+                </div>
                 {% endblock %}
             </div><!-- #footer -->
         </div><!-- .container -->
