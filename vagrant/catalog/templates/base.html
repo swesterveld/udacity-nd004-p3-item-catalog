@@ -16,6 +16,13 @@
             <div class="row" id="header">
                 {% block header %}
                 <h1><a href="{{ url_for('showCatalog') }}">Beer Catalog</a></h1>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-info" role="alert">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
                 {% endblock header %}
             </div><!-- header -->
             <div class="row" id="content">

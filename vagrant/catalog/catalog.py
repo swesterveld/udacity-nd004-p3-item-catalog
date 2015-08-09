@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for
+from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 
 # Imports for CRUD operations on database
 from sqlalchemy import create_engine
@@ -58,16 +58,18 @@ def showItem(category_id, item_id):
 def newItem():
     '''After logging in, this page gives the user the ability to add an item
     with item info.'''
+    categories = session.query(Category).all()
+
     if request.method == 'POST':
         newObj = Item(name = request.form['name'],
                 category_id = request.form['category'],
                 description = request.form['description'])
         session.add(newObj)
-        # TODO: Flash message
+        cat = session.query(Category).filter_by(id=newObj.category_id).one()
+        flash('New beer "%s" has been successfully added to the category "%s". Cheers!' % (newObj.name, cat.name))
         session.commit()
         return redirect(url_for('showCatalog'))
     else:
-        categories = session.query(Category).all()
         return render_template('item_new.html', categories=categories)
 
 
