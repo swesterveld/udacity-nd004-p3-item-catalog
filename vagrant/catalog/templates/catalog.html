@@ -4,25 +4,40 @@
 
 This homepage will show all current categories along with the latest added items. After loggin in, a user has the ability to add, update or delete item info.
 
-<div id="categories">
-    <h2>Categories</h2>
-    <!-- test with (sub-)categories -->
-    {% for super in categories if super.parent_id == None %}
-        <p>{{ super.name }}</p>
-        <ul>
-        {% for sub in categories if sub.parent_id == super.id %}
-            <li><a href="{{ url_for('showCategory', category_id=sub.id) }}">{{ sub.name }}</a></li>
-        {% endfor %}
-        </ul>
-    {% endfor %}
+<div class="col-md-3" id="categories">
+    <div class="row">
+        <div>
+            <h2>Categories</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div>
+            <!-- test with (sub-)categories -->
+            {% for super in categories if super.parent_id == None %}
+                <p>{{ super.name }}</p>
+                <ul>
+                {% for sub in categories if sub.parent_id == super.id %}
+                    <li><a href="{{ url_for('showCategory', category_id=sub.id) }}">{{ sub.name }}</a></li>
+                {% endfor %}
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
 </div>
-<div>
-    <a href="{{ url_for('newItem') }}",>Add Item</a>
-    <h2>Latest items</h2>
-    <ul>
-    {% for item in latest_items %}
-        <li><a href="{{ url_for('showItem', category_id=item.category_id, item_id=item.id) }}">{{item.name}}</a> ({{item.category.name}})</li>
-    {% endfor %}
-</ul>
+
+<div class="col-md-9">
+    <div class="row">
+        <div>
+            <a href="{{ url_for('newItem') }}",>Add Item</a>
+            <h2>Latest items</h2>
+            <ul>
+            {% for item in latest_items %}
+                <li><a href="{{ url_for('showItem', category_id=item.category_id, item_id=item.id) }}">{{item.name}}</a> ({{item.category.name}})</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
