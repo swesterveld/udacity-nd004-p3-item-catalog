@@ -25,13 +25,17 @@ class Category(Base):
     description = Column(String, nullable=True)
     parent_id = Column(Integer, ForeignKey('category.id'), nullable=True)
     parent = relationship('Category')
+    items = relationship('Item')
 
     @property
     def serialize(self):
         '''Return object data in JSON format'''
         return {
-            'id'    : id,
-            'name'  : name
+            'id'    : self.id,
+            'parent_id' : self.parent_id,
+            'name'  : self.name,
+            'description': self.description,
+            'items': [i.serialize for i in self.items]
         }
 
 
@@ -50,8 +54,10 @@ class Item(Base):
     def serialize(self):
         '''Return object data in JSON format'''
         return {
-            'id'    : id,
-            'name'  : name
+            'id'    : self.id,
+            'name'  : self.name,
+            'description': self.description,
+            'category_id': self.category_id
         }
 
 
