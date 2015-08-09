@@ -1,12 +1,15 @@
 {% extends "base.html" %}
+
 {% block content %}
-{% include "header.html" %}
 
-<h2> Are you sure you want to delete {{item}}?</h2>
+<div><h2>Delete Item</h2></div>
 
-<form action="#" method = 'post'>
+<div>
+    <p>Are you sure you want to delete "{{item.name}}" from the category "{{item.category.name}}"?</p>
 
-    <button type="submit" id="delete" label="Confirm">Delete</button>
+    <form action="#" method = 'post'>
+        <button type="submit" id="delete" label="Confirm">Delete</button>
+    </form>
+</div>
 
-</form>
 {% endblock %}
