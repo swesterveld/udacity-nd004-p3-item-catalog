@@ -11,7 +11,7 @@ This view will show all items available for a specific (selected) category.
         <p>{{ super.name }}</p>
         <ul>
         {% for sub in categories if sub.parent_id == super.id %}
-        <li><a href="{{ url_for('showCategory', category_id=sub.id) }}">{{ sub.name }}</a></li>
+            <li><a href="{{ url_for('showCategory', category_id=sub.id) }}">{{ sub.name }}</a></li>
         {% endfor %}
         </ul>
     {% endfor %}
