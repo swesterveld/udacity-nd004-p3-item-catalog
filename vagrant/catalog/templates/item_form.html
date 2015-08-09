@@ -11,7 +11,7 @@
 
             <div class="form-group">
                 <label for="category">Category &amp; Style:</label>
-                <select class="form-control" name="category" size="10" required>
+                <select class="form-control" name="category_id" size="10" required>
                     <!-- fill drop-down menu with (sub-)categories -->
                     {% for super in categories if super.parent_id == None %}
                         <optgroup label="{{super.name}}">

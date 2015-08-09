@@ -62,23 +62,39 @@ def newItem():
 
     if request.method == 'POST':
         newItem = Item(name = request.form['name'],
-                category_id = request.form['category'],
+                category_id = request.form['category_id'],
                 description = request.form['description'])
+
         session.add(newItem)
         newItemCategory = session.query(Category).filter_by(id=newItem.category_id).one()
         flash('New beer "%s" has been successfully added to the category "%s". Cheers!' % (newItem.name, newItemCategory.name))
         session.commit()
+
         return redirect(url_for('showCatalog'))
+
     else:
         return render_template('item_new.html', categories=categories)
 
 
-@app.route('/catalog/<item_id>/edit/')
+@app.route('/catalog/<item_id>/edit/', methods=['GET', 'POST'])
 def editItem(item_id):
     '''After logging in, this page gives the user the ability to update the item info.'''
     categories = session.query(Category).all()
     item = session.query(Item).filter_by(id=item_id).one()
-    return render_template('item_edit.html', categories=categories, item=item)
+
+    if request.method == 'POST':
+        item.name = request.form['name']
+        item.category_id = request.form['category_id']
+        item.description = request.form['description']
+
+        session.add(item)
+        flash('Item has been modified')
+        session.commit()
+
+        return redirect(url_for('showCatalog'))
+
+    else:
+        return render_template('item_edit.html', categories=categories, item=item)
 
 
 @app.route('/catalog/<int:item_id>/delete/')
