@@ -10,9 +10,12 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    username = Column(String, nullable=False)
+    given_name = Column(String, nullable=True)
+    family_name = Column(String, nullable=True)
     email = Column(String, nullable=False)
     picture = Column(String)
+    gender = Column(String, nullable=True)
 
 
 class Category(Base):
@@ -57,7 +60,8 @@ class Item(Base):
             'id'    : self.id,
             'name'  : self.name,
             'description': self.description,
-            'category_id': self.category_id
+            'category_id': self.category_id,
+            'user_id': self.user_id
         }
 
 

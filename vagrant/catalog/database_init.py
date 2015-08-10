@@ -15,6 +15,31 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+users = (
+    {
+        'id': 1,
+        'username': u'Sil Westerveld',
+        'family_name': u'Westerveld',
+        'given_name': u'Sil',
+        'email': u'g@silwesterveld.com',
+        'picture': u'https://lh6.googleusercontent.com/-RR3rG2Ma6Bk/AAAAAAAAAAI/AAAAAAAAAEI/Pjmz2qSHytM/photo.jpg'
+    },
+)
+
+for u in users:
+    print 'adding user: %s' % u
+    user = User(id = u['id'],
+            username = u['username'],
+            family_name = u['family_name'],
+            given_name = u['given_name'],
+            email = u['email'],
+            picture = u['picture'])
+    session.add(user)
+
+session.commit()
+
+print 'added users!'
+
 categories = (
     {
         'id': 1,
@@ -484,37 +509,43 @@ items = (
         'id': 1,
         'name': u'Westmalle Dubbel',
         'description': u'''A reddish brown trappist ale, malty and fruit, featuring a 3 week secondary fermentation. This ale has a full, pale yellow head. The bouquet is full of esters and fruitiness. Notes of ripe banana predominate. The taste is fruity and slightly bitter, with a long, dry finish.''',
-        'category_id': 7
+        'category_id': 7,
+        'user_id': 1
     },
     {
         'id': 2,
         'name': u'Tripel Karmeliet',
         'description': u'''First brewed 1996; claimed to be based on a recipe from 1679 which used wheat, oat and barley. Tripel Karmeliet is a very refined and complex golden-to-bronze brew with a fantastic creamy head. These characteristics derive not only from the grains used but also from restrained hopping with Styrians and the fruity nature (banana and vanilla) of the house yeast. Aroma has hints of vanilla mixed with citrus aromas. Tripel Karmeliet has not only the lightness and freshness of wheat, but also the creaminess of oats together with a spicy lemony almost quinine dryness.''',
-        'category_id': 8
+        'category_id': 8,
+        'user_id': 1
     },
     {
         'id': 3,
         'name': u'Westmalle Tripel',
         'description': u'''A strong, dry and spicy trappist ale. The product of a secondary fermentation lasting 5 weeks. This is a complex ale with a fruity aroma and a nice nuanced hop scent. It is soft and creamy in the mouth, with a bitter touch carried by the fruity aroma. An exceptional ale, with a great deal of finesse and elegance, and with a splendid long after taste.''',
-        'category_id': 8
+        'category_id': 8,
+        'user_id': 1
     },
     {
         'id': 4,
         'name': u'Orval',
         'description': u'''In contrast to all the others, the Orval Trappist brewery makes only one beer for the general public. It has an intensely aromatic and dry character. Between the first and second fermentations there is also an additional dry-hopping process. Through this the beer acquires its pronounced hoppy aroma and extra dry taste.  Bottled at 5.2% abv - can go up as high as 7.2%''',
-        'category_id': 10
+        'category_id': 10,
+        'user_id': 1
     },
     {
         'id': 5,
         'name': u'Westvleteren Blond',
         'description': u'''Westvleteren Blond is the basic beer for the monks’ own consumption, since 1999, when the former 6° dark ale (red cap) was finally discarded, after the 4° had already gone that path.''',
-        'category_id': 10
+        'category_id': 10,
+        'user_id': 1
     },
     {
         'id': 6,
         'name': u'Just a Beer',
         'description': 'Just a description for just a beer.',
-        'category_id': 10
+        'category_id': 10,
+        'user_id': 1
     }
 )
 

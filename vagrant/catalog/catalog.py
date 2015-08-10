@@ -1,9 +1,28 @@
+from functools import wraps
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 
 # Imports for CRUD operations on database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item, User
+
+# New imports for step to create anti forgery state token
+from flask import session as login_session
+import random, string
+
+# Needed to handle the code sent back from the callback method
+from oauth2client.client import flow_from_clientsecrets # creates a flow object from client_secrets.json file
+from oauth2client.client import FlowExchangeError
+import httplib2
+import json
+from flask import make_response
+import requests
+
+# Credentials for Google OAuth
+GOOGLE_CLIENT_ID = json.loads(
+        open('client_secrets.json', 'r').read())['web']['client_id']
+APPLICATION_NAME = "Beer Catalog"
+
 
 app = Flask(__name__)
 app.debug = True
@@ -15,6 +34,242 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+
+# Decorator for required logins
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in login_session:
+            import pdb; pdb.set_trace()
+            return redirect(url_for('showLogin', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Create a state token to prevent request forgery.
+# Store it in the session for later validation.
+@app.route('/login/')
+def showLogin():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+            for x in xrange(32))
+    login_session['state'] = state
+    return render_template('login.html')
+
+@app.route('/connect_google', methods=['POST'])
+def connectGoogle():
+
+    # First confirm that the token that the client sends to server
+    # matches the token that the server sent to the client, to validate
+    # that the user is making the request.
+    if request.args.get('state') != login_session['state']:
+        # No further authentication will occur on the server side if
+        # there is a mismatch between these state tokens
+        response = make_response(json.dumps('Invalid state parameter'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        import pdb; pdb.set_trace()
+        return response
+
+    # Proceed and collect the one-time authorization code from the server
+    auth_code = request.data
+
+    try:
+        # Try to exchange this authorization code for a credentials
+        # object, which will contain the access code for my server.
+        # First create an OAuth Flow object and specify postmessage as
+        # the one-time code flow.
+        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow.redirect_uri = 'postmessage'
+        # Initiate the exchange, passing in the one-time authorization
+        # code as input, which results in a credentials object.
+        credentials = oauth_flow.step2_exchange(auth_code)
+    except FlowExchangeError:
+        # In case of an error, send the response as a JSON-object.
+        response = make_response(json.dumps('Failed to upgrade the authorization code.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        import pdb; pdb.set_trace()
+        return response
+
+    # Check for a valid (working) access token inside of the credentials
+    # object.
+    access_token = credentials.access_token
+    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' % access_token)
+    h = httplib2.Http()
+    result = json.loads(h.request(url, 'GET')[1])
+    # If there was an error in the access token info, it's invalid, so
+    # abort. Send the response as a JSON-object.
+    if result.get('error') is not None:
+        response = make_response(json.dumps(result.get('error')), 500)
+        response.headers['Content-Type'] = 'application/json'
+        import pdb; pdb.set_trace()
+        return response
+
+    # We now have a working access token. Now let's make sure we have
+    # the right access token, by verifying that the access token is used
+    # for the intended user.
+    gplus_id = credentials.id_token['sub']
+    # If the id of the token in the credentials object does not match
+    # the id returned by the Google API server, we do not have the right
+    # token. In that case send the error in a response as a JSON-object.
+    if result['user_id'] != gplus_id:
+        response = make_response(
+            json.dumps("Token's user ID doesn't match given user ID."), 401)
+        response.headers['Content-Type'] = 'application/json'
+        import pdb; pdb.set_trace()
+        return response
+
+    # Verify that the access token is valid for this app.
+    if result['issued_to'] != GOOGLE_CLIENT_ID:
+        response = make_response(
+            json.dumps("Token's client ID does not match app's."), 401)
+        print "Token's client ID does not match app's."
+        response.headers['Content-Type'] = 'application/json'
+        import pdb; pdb.set_trace()
+        return response
+
+    # Lastly, check if user is already logged in. In this case return a
+    # 200 (successful authentication) without resetting all of the
+    # login-session variables again.
+    stored_credentials = login_session.get('credentials')
+    stored_gplus_id = login_session.get('gplus_id')
+    if stored_credentials is not None and gplus_id == stored_gplus_id:
+        response = make_response(json.dumps('Current user is already connected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        import pdb; pdb.set_trace()
+        return response
+
+    # Assuming none of the if-statements for the checks were true, we
+    # now have a valid access token, and the user is successfully able
+    # to log in to the server. We should store the access token in the
+    # user's login-session for later use.
+    login_session['credentials'] = credentials
+    login_session['gplus_id'] = gplus_id
+    #response = make_response(json.dumps('Successfully connected user'), 200)
+
+    # Use the Google Plus API to get some more info about the user.
+    # Send off a message with the access token, requesting the user info
+    # allowed by the token-scope, and store it in an object (data).
+    userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+    params = {'access_token': credentials.access_token, 'alt':'json'}
+    answer = requests.get(userinfo_url, params=params)
+    data = json.loads(answer.text)
+    # If successful, this method returns a response body with the
+    # following structure (or something quite similar):
+    # {
+    #     "gender": string,
+    #     "name": string,
+    #     "given_name": string,
+    #     "family_name": string,
+    #     "id": string,
+    #     "link": string,
+    #     "picture": string,
+    #     "email": string,
+    #     "verified_email": bool,
+    #     "hd": string
+    # }
+    # Now 'data' should have all these values filled in so long as the
+    # user has specified them in their account.
+    # Store the values we're interested in and add the provider to login
+    # session:
+    login_session['username'] = data['name']
+    login_session['given_name'] = data['given_name']
+    login_session['family_name'] = data['family_name']
+    login_session['picture'] = data['picture']
+    login_session['email'] = data['email']
+    login_session['gender'] = data['gender']
+    login_session['provider'] = 'google'
+
+    # Check for existing user with this email address (or make a new one
+    # if it doesn't exist yet) and get its User object.
+    user_id = getUserID(login_session['email']) or createUser(login_session)
+    login_session['user_id'] = user_id
+    user = getUserInfo(login_session['user_id'])
+
+    # Create a response that knows about the user's name and could
+    # return their picture. Add a flash message to let the user know
+    # that they're logged in.
+    output = ''
+    output += '<h1>Welcome, '
+    output += login_session['username']
+    #output += user.name
+
+    output += '!</h1>'
+    output += '<img src="'
+    output += login_session['picture']
+    #output += user.picture
+    output += '" style="width: 300px; height: 300px; border-radius: 150px; -webkit-border-radius: 150px; -moz-border-radius: 150px;"> '
+    flash("you are now logged in as %s"%login_session['username'])
+    #flash("you are now logged in as %s" % user.name)
+    #print "done!"
+    return output
+    #return response
+
+
+# Disconnect - Revoke a user's token and resset their login_session
+@app.route("/disconnect")
+def disconnect():
+    # Only disconnect a connected user.
+    credentials = login_session.get('credentials')
+    if credentials is None:
+        # If there is no credentials, there's noone to disconnect from the app
+        response = make_response(json.dumps('Current user is not connected.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Execute HTTP GET request to revoke current token.
+    access_token = credentials.access_token
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+
+    if result['status'] == '200':
+        # Reset the user's session.
+        del login_session['credentials']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['given_name']
+        del login_session['family_name']
+        del login_session['email']
+        del login_session['picture']
+        del login_session['gender']
+        del login_session['user_id']
+        del login_session['provider']
+
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        # For whatever reason, the given token was invalid.
+        response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+
+def createUser(login_session):
+    newUser = User(username = login_session['username'],
+            given_name = login_session['given_name'],
+            family_name = login_session['family_name'],
+            email = login_session['email'],
+            picture = login_session['picture'],
+            gender = login_session['gender'])
+    session.add(newUser)
+    flash('Added new user.')
+    session.commit()
+    user = session.query(User).filter_by(email = login_session['email']).one()
+    return user.id
+
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id = user_id).one()
+    return user
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email = email).one()
+        return user.id
+    except:
+        return None
+
+
+
 @app.route('/')
 @app.route('/catalog/')
 def showCatalog():
@@ -23,8 +278,10 @@ def showCatalog():
     update or delete item info.'''
     categories = session.query(Category).all()
     latest_items = session.query(Item).order_by('-Item.id').limit(10)
-    return render_template('catalog.html', categories=categories, latest_items=latest_items)
-
+    if 'user_id' not in login_session:
+        return render_template('pub_catalog.html', categories=categories, latest_items=latest_items)
+    else:
+        return render_template('catalog.html', categories=categories, latest_items=latest_items)
 
 @app.route('/catalog.json')
 def showCatalogJSON():
@@ -51,10 +308,14 @@ def showItem(category_id, item_id):
     select an item to update or delete its item info.'''
     category = session.query(Category).filter_by(id=category_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
-    return render_template('item.html', category=category, item=item)
+    if 'user_id' not in login_session:
+        return render_template('pub_item.html', category=category, item=item)
+    else:
+        return render_template('item.html', category=category, item=item)
 
 
 @app.route('/catalog/items/new/', methods=['GET','POST'])
+@login_required
 def newItem():
     '''After logging in, this page gives the user the ability to add an item
     with item info.'''
@@ -77,6 +338,7 @@ def newItem():
 
 
 @app.route('/catalog/<item_id>/edit/', methods=['GET', 'POST'])
+@login_required
 def editItem(item_id):
     '''After logging in, this page gives the user the ability to update the item info.'''
     categories = session.query(Category).all()
@@ -98,6 +360,7 @@ def editItem(item_id):
 
 
 @app.route('/catalog/<int:item_id>/delete/', methods=['GET', 'POST'])
+@login_required
 def deleteItem(item_id):
     '''After logging in, this page gives the user the ability to delete the
     item info.'''
