@@ -1,5 +1,13 @@
 from functools import wraps
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import Flask
+from flask import make_response
+from flask import render_template
+from flask import request
+from flask import redirect
+from flask import jsonify
+from flask import url_for
+from flask import flash
+from flask import session
 
 # Imports for CRUD operations on database
 from sqlalchemy import create_engine
@@ -7,15 +15,15 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item, User
 
 # New imports for step to create anti forgery state token
-from flask import session as login_session
-import random, string
+import json
+import random
+import string
 
 # Needed to handle the code sent back from the callback method
+import httplib2
 from oauth2client.client import flow_from_clientsecrets # creates a flow object from client_secrets.json file
 from oauth2client.client import FlowExchangeError
-import httplib2
-import json
-from flask import make_response
+
 import requests
 
 # Credentials for Google OAuth
@@ -32,35 +40,28 @@ app.secret_key = """M}XUZoTl+U3]j`Gk&d5ysi5)}GTIDA?9"""
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
-session = DBSession()
+db = DBSession()
 
 
 # Decorator for required logins
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'username' not in login_session:
-            import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
+        if 'username' not in session:
             return redirect(url_for('showLogin', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
 
-# Create a state token to prevent request forgery.
-# Store it in the session for later validation.
-@app.route('/login/')
-def showLogin():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-            for x in xrange(32))
-    login_session['state'] = state
-    return render_template('login.html')
-
 @app.route('/connect_google', methods=['POST'])
 def connectGoogle():
+    '''Exchange the one-time authorization token for a token and store
+    the token in the session.'''
 
     # First confirm that the token that the client sends to server
     # matches the token that the server sent to the client, to validate
     # that the user is making the request.
-    if request.args.get('state') != login_session['state']:
+    if request.args.get('state') != session['state']:
         # No further authentication will occur on the server side if
         # there is a mismatch between these state tokens
         response = make_response(json.dumps('Invalid state parameter'), 401)
@@ -85,7 +86,6 @@ def connectGoogle():
         # In case of an error, send the response as a JSON-object.
         response = make_response(json.dumps('Failed to upgrade the authorization code.'), 401)
         response.headers['Content-Type'] = 'application/json'
-        import pdb; pdb.set_trace()
         return response
 
     # Check for a valid (working) access token inside of the credentials
@@ -128,8 +128,8 @@ def connectGoogle():
     # Lastly, check if user is already logged in. In this case return a
     # 200 (successful authentication) without resetting all of the
     # login-session variables again.
-    stored_credentials = login_session.get('credentials')
-    stored_gplus_id = login_session.get('gplus_id')
+    stored_credentials = session.get('credentials')
+    stored_gplus_id = session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
         response = make_response(json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
@@ -140,8 +140,8 @@ def connectGoogle():
     # now have a valid access token, and the user is successfully able
     # to log in to the server. We should store the access token in the
     # user's login-session for later use.
-    login_session['credentials'] = credentials
-    login_session['gplus_id'] = gplus_id
+    session['credentials'] = credentials
+    session['gplus_id'] = gplus_id
     #response = make_response(json.dumps('Successfully connected user'), 200)
 
     # Use the Google Plus API to get some more info about the user.
@@ -169,45 +169,45 @@ def connectGoogle():
     # user has specified them in their account.
     # Store the values we're interested in and add the provider to login
     # session:
-    login_session['username'] = data['name']
-    login_session['given_name'] = data['given_name']
-    login_session['family_name'] = data['family_name']
-    login_session['picture'] = data['picture']
-    login_session['email'] = data['email']
-    login_session['gender'] = data['gender']
-    login_session['provider'] = 'google'
+    session['username'] = data['name']
+    session['given_name'] = data['given_name']
+    session['family_name'] = data['family_name']
+    session['picture'] = data['picture']
+    session['email'] = data['email']
+    session['gender'] = data['gender']
+    session['provider'] = 'google'
 
     # Check for existing user with this email address (or make a new one
     # if it doesn't exist yet) and get its User object.
-    user_id = getUserID(login_session['email']) or createUser(login_session)
-    login_session['user_id'] = user_id
-    user = getUserInfo(login_session['user_id'])
+    user_id = getUserID(session['email']) or createUser(session)
+    session['user_id'] = user_id
+    user = getUserInfo(session['user_id'])
 
     # Create a response that knows about the user's name and could
     # return their picture. Add a flash message to let the user know
     # that they're logged in.
     output = ''
     output += '<h1>Welcome, '
-    output += login_session['username']
+    output += session['username']
     #output += user.name
 
     output += '!</h1>'
     output += '<img src="'
-    output += login_session['picture']
+    output += session['picture']
     #output += user.picture
     output += '" style="width: 300px; height: 300px; border-radius: 150px; -webkit-border-radius: 150px; -moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s"%login_session['username'])
+    flash("you are now logged in as %s"%session['username'])
     #flash("you are now logged in as %s" % user.name)
     #print "done!"
     return output
     #return response
 
 
-# Disconnect - Revoke a user's token and resset their login_session
+# Disconnect - Revoke a user's token and resset their session
 @app.route("/disconnect")
 def disconnect():
     # Only disconnect a connected user.
-    credentials = login_session.get('credentials')
+    credentials = session.get('credentials')
     if credentials is None:
         # If there is no credentials, there's noone to disconnect from the app
         response = make_response(json.dumps('Current user is not connected.'), 401)
@@ -222,16 +222,16 @@ def disconnect():
 
     if result['status'] == '200':
         # Reset the user's session.
-        del login_session['credentials']
-        del login_session['gplus_id']
-        del login_session['username']
-        del login_session['given_name']
-        del login_session['family_name']
-        del login_session['email']
-        del login_session['picture']
-        del login_session['gender']
-        del login_session['user_id']
-        del login_session['provider']
+        del session['credentials']
+        del session['gplus_id']
+        del session['username']
+        del session['given_name']
+        del session['family_name']
+        del session['email']
+        del session['picture']
+        del session['gender']
+        del session['user_id']
+        del session['provider']
 
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
@@ -243,27 +243,27 @@ def disconnect():
         return response
 
 
-def createUser(login_session):
-    newUser = User(username = login_session['username'],
-            given_name = login_session['given_name'],
-            family_name = login_session['family_name'],
-            email = login_session['email'],
-            picture = login_session['picture'],
-            gender = login_session['gender'])
-    session.add(newUser)
+def createUser(session):
+    newUser = User(username = session['username'],
+            given_name = session['given_name'],
+            family_name = session['family_name'],
+            email = session['email'],
+            picture = session['picture'],
+            gender = session['gender'])
+    db.add(newUser)
     flash('Added new user.')
-    session.commit()
-    user = session.query(User).filter_by(email = login_session['email']).one()
+    db.commit()
+    user = db.query(User).filter_by(email = session['email']).one()
     return user.id
 
 
 def getUserInfo(user_id):
-    user = session.query(User).filter_by(id = user_id).one()
+    user = db.query(User).filter_by(id = user_id).one()
     return user
 
 def getUserID(email):
     try:
-        user = session.query(User).filter_by(email = email).one()
+        user = db.query(User).filter_by(email = email).one()
         return user.id
     except:
         return None
@@ -276,16 +276,22 @@ def showCatalog():
     '''This is the homepage which will show all current categories along with
     the latest added items. After logging in, a user has the ability to add,
     update or delete item info.'''
-    categories = session.query(Category).all()
-    latest_items = session.query(Item).order_by('-Item.id').limit(10)
-    if 'user_id' not in login_session:
+    # Create a state token to prevent request forgery and store it in
+    # the session for later validation.
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+            for x in xrange(32))
+    session['state'] = state
+    categories = db.query(Category).all()
+
+    latest_items = db.query(Item).order_by('-Item.id').limit(10)
+    if 'user_id' not in session:
         return render_template('pub_catalog.html', categories=categories, latest_items=latest_items)
     else:
         return render_template('catalog.html', categories=categories, latest_items=latest_items)
 
 @app.route('/catalog.json')
 def showCatalogJSON():
-    categories = session.query(Category).all()
+    categories = db.query(Category).all()
     return jsonify(categories= [c.serialize for c in categories])
 
 
@@ -294,9 +300,9 @@ def showCatalogJSON():
 def showCategory(category_id):
     ''' When a specific category has been selected, this page will show all
     the items available for that category.'''
-    current_category = session.query(Category).filter_by(id=category_id).one()
-    categories = session.query(Category).all()
-    items = session.query(Item).filter_by(category_id=category_id).order_by('Item.name')
+    current_category = db.query(Category).filter_by(id=category_id).one()
+    categories = db.query(Category).all()
+    items = db.query(Item).filter_by(category_id=category_id).order_by('Item.name')
     return render_template('category.html', categories=categories,
             category=current_category, items=items)
 
@@ -306,9 +312,9 @@ def showItem(category_id, item_id):
     ''' When a specific item has been selected, this page will show all
     information of that item. After logging in, a user has the ability to
     select an item to update or delete its item info.'''
-    category = session.query(Category).filter_by(id=category_id).one()
-    item = session.query(Item).filter_by(id=item_id).one()
-    if 'user_id' not in login_session:
+    category = db.query(Category).filter_by(id=category_id).one()
+    item = db.query(Item).filter_by(id=item_id).one()
+    if 'user_id' not in session:
         return render_template('pub_item.html', category=category, item=item)
     else:
         return render_template('item.html', category=category, item=item)
@@ -319,17 +325,17 @@ def showItem(category_id, item_id):
 def newItem():
     '''After logging in, this page gives the user the ability to add an item
     with item info.'''
-    categories = session.query(Category).all()
+    categories = db.query(Category).all()
 
     if request.method == 'POST':
         newItem = Item(name = request.form['name'],
                 category_id = request.form['category_id'],
                 description = request.form['description'])
 
-        session.add(newItem)
-        newItemCategory = session.query(Category).filter_by(id=newItem.category_id).one()
+        db.add(newItem)
+        newItemCategory = db.query(Category).filter_by(id=newItem.category_id).one()
         flash('New beer "%s" has been successfully added to the category "%s". Cheers!' % (newItem.name, newItemCategory.name))
-        session.commit()
+        db.commit()
 
         return redirect(url_for('showCatalog'))
 
@@ -341,17 +347,17 @@ def newItem():
 @login_required
 def editItem(item_id):
     '''After logging in, this page gives the user the ability to update the item info.'''
-    categories = session.query(Category).all()
-    item = session.query(Item).filter_by(id=item_id).one()
+    categories = db.query(Category).all()
+    item = db.query(Item).filter_by(id=item_id).one()
 
     if request.method == 'POST':
         item.name = request.form['name']
         item.category_id = request.form['category_id']
         item.description = request.form['description']
 
-        session.add(item)
+        db.add(item)
         flash('Item has been modified')
-        session.commit()
+        db.commit()
 
         return redirect(url_for('showCatalog'))
 
@@ -364,12 +370,12 @@ def editItem(item_id):
 def deleteItem(item_id):
     '''After logging in, this page gives the user the ability to delete the
     item info.'''
-    item = session.query(Item).filter_by(id=item_id).one()
+    item = db.query(Item).filter_by(id=item_id).one()
 
     if request.method == 'POST':
-        session.delete(item)
+        db.delete(item)
         flash('Deleted "%s" from the database.' % item.name)
-        session.commit()
+        db.commit()
         return redirect(url_for('showCatalog'))
     else:
         return render_template('item_delete.html', item=item)
