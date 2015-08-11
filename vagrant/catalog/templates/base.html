@@ -7,21 +7,50 @@
 
         <!-- Optional theme -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-        <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
 
         <!-- Own CSS to specify some custom styles -->
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+        <!-- Google+ OAuth API -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
 	</head>
 	<body>
 		<div class="container">
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile
+                    display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/catalog/">Beer Catalog</a>
+                    </div>
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Belgian-Style Ales<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/catalog/7/items/">Abbey Dubbel</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
             <div class="row" id="header">
                 {% block header %}
                 <div>
                     <a href="{{ url_for('disconnect') }}">Logout</a>
-                </div>
-                <div>
-                    <h1><a href="{{ url_for('showCatalog') }}">Beer Catalog</a></h1>
                 </div>
             </div>
             <div class="row">
