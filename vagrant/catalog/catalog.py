@@ -184,28 +184,13 @@ def connectGoogle():
     session['user_id'] = user_id
     user = getUserInfo(session['user_id'])
 
-    # Create a response that knows about the user's name and could
-    # return their picture. Add a flash message to let the user know
-    # that they're logged in.
-    output = ''
-    output += '<h1>Welcome, '
-    output += session['username']
-    #output += user.name
-
-    output += '!</h1>'
-    output += '<img src="'
-    output += session['picture']
-    #output += user.picture
-    output += '" style="width: 300px; height: 300px; border-radius: 150px; -webkit-border-radius: 150px; -moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s"%session['username'])
-    #flash("you are now logged in as %s" % user.name)
-    #print "done!"
-    return output
-    #return response
+    flash("You are now logged in as %s" % session['username'])
+    return redirect(url_for('showCatalog'))
 
 
 # Disconnect - Revoke a user's token and resset their session
 @app.route("/disconnect")
+@login_required
 def disconnect():
     # Only disconnect a connected user.
     credentials = session.get('credentials')
@@ -234,11 +219,11 @@ def disconnect():
         del session['user_id']
         del session['provider']
 
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        flash('You have been successfully logged out.')
+        return redirect(url_for('showCatalog'))
     else:
         # For whatever reason, the given token was invalid.
+        #import pdb; pdb.set_trace()
         response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
         response.headers['Content-Type'] = 'application/json'
         return response
