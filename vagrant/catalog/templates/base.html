@@ -11,16 +11,16 @@
         <!-- Own CSS to specify some custom styles -->
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 
+        <!-- Google+ OAuth API -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
-        <!-- Google+ OAuth API -->
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-        <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
 	</head>
 	<body>
 		<div class="container">
-            <nav class="navbar navbar-default">
+            <nav class="navbar navbar-default navbar-fixed-top">
                 <div class="container-fluid">
                     <!-- Brand and toggle get grouped for better mobile
                     display -->
@@ -35,14 +35,19 @@
                     </div>
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <!-- make a lists with (sub-)categories -->
+                        {% for super in categories if super.parent_id == None %}
                         <ul class="nav navbar-nav">
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Belgian-Style Ales<span class="caret"></span></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ super.name }}<span class="caret"></span></a>
+                                {% for sub in categories if sub.parent_id == super.id %}
                                 <ul class="dropdown-menu">
-                                    <li><a href="/catalog/7/items/">Abbey Dubbel</a></li>
+                                    <li><a href="{{ url_for('showCategory', category_id=sub.id) }}">{{ sub.name }}</a></li>
                                 </ul>
+                                {% endfor %}
                             </li>
                         </ul>
+                        {% endfor %}
                     </div>
                 </div>
             </nav>
