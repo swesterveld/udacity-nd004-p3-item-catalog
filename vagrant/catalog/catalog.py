@@ -49,7 +49,8 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         #import pdb; pdb.set_trace()
         if 'username' not in session:
-            return redirect(url_for('showLogin', next=request.url))
+            flash('You are not authorized, because you are not logged in.')
+            return redirect(url_for('showCatalog', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -350,6 +351,11 @@ def editItem(item_id):
     categories = db.query(Category).all()
     item = db.query(Item).filter_by(id=item_id).one()
 
+    if session['user_id'] != item.user_id:
+        response = make_response(json.dumps('Unauthorized'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
     if request.method == 'POST':
         item.name = request.form['name']
         item.category_id = request.form['category_id']
@@ -371,6 +377,11 @@ def deleteItem(item_id):
     '''After logging in, this page gives the user the ability to delete the
     item info.'''
     item = db.query(Item).filter_by(id=item_id).one()
+
+    if session['user_id'] != item.user_id:
+        response = make_response(json.dumps('Unauthorized'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
     if request.method == 'POST':
         db.delete(item)
