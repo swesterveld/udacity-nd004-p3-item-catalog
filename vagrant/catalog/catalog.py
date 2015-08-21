@@ -54,7 +54,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@app.route('/connect_google', methods=['POST'])
+@app.route('/connect', methods=['POST'])
 def connectGoogle():
     '''Exchange the one-time authorization token for a token and store
     the token in the session.'''
@@ -67,7 +67,7 @@ def connectGoogle():
         # there is a mismatch between these state tokens
         response = make_response(json.dumps('Invalid state parameter'), 401)
         response.headers['Content-Type'] = 'application/json'
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         return response
 
     # Proceed and collect the one-time authorization code from the server
@@ -100,7 +100,7 @@ def connectGoogle():
     if result.get('error') is not None:
         response = make_response(json.dumps(result.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         return response
 
     # We now have a working access token. Now let's make sure we have
@@ -114,7 +114,7 @@ def connectGoogle():
         response = make_response(
             json.dumps("Token's user ID doesn't match given user ID."), 401)
         response.headers['Content-Type'] = 'application/json'
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         return response
 
     # Verify that the access token is valid for this app.
@@ -123,7 +123,7 @@ def connectGoogle():
             json.dumps("Token's client ID does not match app's."), 401)
         print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         return response
 
     # Lastly, check if user is already logged in. In this case return a
@@ -134,7 +134,7 @@ def connectGoogle():
     if stored_credentials is not None and gplus_id == stored_gplus_id:
         response = make_response(json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         return response
 
     # Assuming none of the if-statements for the checks were true, we
@@ -185,6 +185,7 @@ def connectGoogle():
     user = getUserInfo(session['user_id'])
 
     flash("You are now logged in as %s" % session['username'])
+    #import pdb; pdb.set_trace()
     return redirect(url_for('showCatalog'))
 
 
