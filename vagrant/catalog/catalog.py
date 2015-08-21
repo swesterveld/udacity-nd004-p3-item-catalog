@@ -54,8 +54,9 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# Method to do the login, for now only with support for Google Plus
 @app.route('/connect', methods=['POST'])
-def connectGoogle():
+def connect():
     '''Exchange the one-time authorization token for a token and store
     the token in the session.'''
 
