@@ -2,6 +2,10 @@
 <html lang="en">
 	<head>
         <title>Beer Catalog</title>
+        <!-- Google+ OAuth API -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
@@ -11,16 +15,12 @@
         <!-- Own CSS to specify some custom styles -->
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 
-        <!-- Google+ OAuth API -->
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
-
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	</head>
 	<body>
         <!-- Fixed navbar -->
-        <nav class="navbar navbar-default navbar-fixed-top">
+        <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <!-- Brand and toggle get grouped for better mobile
                 display -->
@@ -48,21 +48,23 @@
                         </li>
                         {% endfor %}
                     </ul>
-                {% if session.username %}
-                <p class="navbar-text navbar-right">Signed in as <a href="#" class="navbar-link">{{ session.username }}</a></p>
-                {% endif %}
+                    <ul class="nav navbar-nav navbar-right">
+                        <!-- Button to trigger modal -->
+
+                        {% if session['username'] %}
+                        <li><a href="{{ url_for('disconnect') }}" role="button">Logout</a></li>
+                        {% else %}
+                        <li><a href="#myModal" role="button" data-toggle="modal">Login</a></li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
         </nav>
+
 		<div class="container">
 
             <div class="row" id="header">
                 {% block header %}
-                <div>
-                    <a href="{{ url_for('disconnect') }}">Logout</a>
-                </div>
-            </div>
-            <div class="row">
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
@@ -72,11 +74,86 @@
                 {% endwith %}
                 {% endblock header %}
             </div><!-- header -->
+
+            <!-- Login Modal -->
+            <div id="myModal" class="modal modal-content fade" tabindex="-1" role="dialog" aira-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 id="myModalLabel">Login</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Log in with your Google+ Account</p>
+                </div>
+                <div class="modal-footer">
+                    <!-- Google Plus sign in -->
+                    <div id="signinButton">
+                        <span class="g-signin"
+                            data-scope="openid email"
+                            data-clientid="264350214576-t1sd3hc55nf93u166h157gjm4eaj3su5.apps.googleusercontent.com"
+                            data-redirecturi="postmessage"
+                            data-accesstype="offline"
+                            data-cookiepolicy="single_host_origin"
+                            data-callback="signInCallback"
+                            data-approvalprompt="force">
+                        </span>
+                    </div>
+                    <!--<div id="result"></div>-->
+                    <script>
+                    function signInCallback(authResult) {
+                        if( authResult['code']) {
+                            // Hide the sign-in button now that the user is authorized
+                            $('#signinButton').attr('style', 'display: none');
+
+                            // Send the one-time-use code to the server, if the server responds,
+                            // write a 'login successful' message to the web page and then redirect
+                            // back to the main page.
+                            $.ajax({
+                                type: 'POST',
+                                url: '/connect?state={{session['state']}}',
+                                processData: false,
+                                data: authResult['code'],
+                                contentType: 'application/octet-stream; charset=utf-8',
+                                success: function(result) {
+                                    // Handle or verify the server response if necessary.
+                                    if (result) {
+                                        //$('#myModal').modal('toggle')
+                                        //$('#result').html('Login Successful!</br>' + result +
+                                        //    '</br>Redirecting...')
+                                        //setTimeout(function() {
+                                            //window.location.href = "/catalog";
+                                            $('#myModal').modal('toggle')
+                                        //}, 4000);
+                                    } else if (authResult['error']) {
+                                        console.log('There was an error: ' + authResult['error']);
+                                    } else {
+                                        $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    </script>
+                    <!-- End Google Plus sign in -->
+                </div>
+            </div><!-- #myModal -->
+
             <div class="row" id="content">
                 {% block content %}
                 {% endblock content %}
             </div><!-- #content -->
+
+
         </div><!-- .container -->
+            
+
+        <!--
+        <footer class="navbar navbar-default navbar-nav-bottom">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                </div>
+            </div>
+        </footer>
+        -->
 
         <footer class="footer">
             <div class="container">

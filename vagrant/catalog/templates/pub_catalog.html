@@ -2,91 +2,31 @@
 
 {% block content %}
 
-<div class="col-md-3" id="categories">
-    <div class="row">
-        <div>
-            <h2>Categories</h2>
-        </div>
-    </div>
-
-    <div class="row">
-        <div>
-        <!-- make a list with (sub-)categories -->
-        {% for super in categories if super.parent_id == None %}
-            <h3>{{ super.name }}</h3>
-            <ul>
-            {% for sub in categories if sub.parent_id == super.id %}
-                <li><a href="{{ url_for('showCategory', category_id=sub.id) }}">{{ sub.name }}</a></li>
-            {% endfor %}
-            </ul>
-        {% endfor %}
-        </div>
-    </div>
-</div>
-
-<div class="col-md-9">
-    <div class="row">
-<!-- Google Plus sign in -->
-        <div id="signinButton">
-            <span class="g-signin"
-                data-scope="openid email"
-                data-clientid="264350214576-t1sd3hc55nf93u166h157gjm4eaj3su5.apps.googleusercontent.com"
-                data-redirecturi="postmessage"
-                data-accesstype="offline"
-                data-cookiepolicy="single_host_origin"
-                data-callback="signInCallback"
-                data-approvalprompt="force">
-            </span>
-        </div>
-        <div id="result"></div>
-        <script>
-        function signInCallback(authResult) {
-            if( authResult['code']) {
-                // Hide the sign-in button now that the user is authorized
-                $('#signinButton').attr('style', 'display: none');
-
-                // Send the one-time-use code to the server, if the server responds,
-                // write a 'login successful' message to the web page and then redirect
-                // back to the main page.
-                $.ajax({
-                    type: 'POST',
-                    url: '/connect_google?state={{session['state']}}',
-                    processData: false,
-                    data: authResult['code'],
-                    contentType: 'application/octet-stream; charset=utf-8',
-                    success: function(result) {
-                        // Handle or verify the server response if necessary.
-                        if (result) {
-                            $('#result').html('Login Successful!</br>' + result +
-                                '</br>Redirecting...')
-                            setTimeout(function() {
-                                window.location.href = "/catalog";
-                            }, 4000);
-                        } else if (authResult['error']) {
-                            console.log('There was an error: ' + authResult['error']);
-                        } else {
-                            $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-                        }
-                    }
-                });
-            }
-        }
-        </script>
-        <!-- End Google Plus sign in -->
+<div class="container">
+    <div class="jumbotron">
+        <h1>Full Stack Beer Catalog</h1>
+        <p class="lead">This beer catalog holds information of beers from several categories and styles. You may browse through the data by selecting categories on the top of this page. If you want to add, modify or delete information, you need to <a href="#" data-toggle="modal" data-target="#myModal">log in</a> with your Google+ Account first.</p>
     </div>
     <div class="row">
-        <div>
-            <h2>Latest items</h2>
+        <div class="row">
+            <h4>Latest added items:</h4>
         </div>
-    </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <ul>
+                    {% for item in latest_items %}
+                    <li>{{ item.name }} - {{ item.category.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
 
-    <div class="row">
-        <div>
-            <ul>
-            {% for item in latest_items %}
-                <li><a href="{{ url_for('showItem', category_id=item.category_id, item_id=item.id) }}">{{item.name}}</a></li>
-            {% endfor %}
-            </ul>
+            <div class="col-lg-6">
+                <ul>
+                    {% for item in latest_items %}
+                    <li>{{ item.name }} - {{ item.category.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
 </div>
