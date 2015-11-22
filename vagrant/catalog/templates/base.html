@@ -31,7 +31,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/catalog/">Beer Catalog</a>
+                    <a class="navbar-brand" href="{{ url_for('showCatalog')}}">Beer Catalog</a>
                 </div>
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div id="navbar" class="collapse navbar-collapse">
@@ -52,9 +52,16 @@
                         <!-- Button to trigger modal -->
 
                         {% if session['username'] %}
-                        <li><a href="{{ url_for('disconnect') }}" role="button">Logout</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ session['username'] }}<span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('disconnect') }}" role="button">Sign out</a></li>
+                            </ul>
+                        </li>
                         {% else %}
-                        <li><a href="#myModal" role="button" data-toggle="modal">Login</a></li>
+                        <li><a href="#signInModal" role="button" data-toggle="modal">Sign in</a></li>
                         {% endif %}
                     </ul>
                 </div>
@@ -76,84 +83,76 @@
             </div><!-- header -->
 
             <!-- Login Modal -->
-            <div id="myModal" class="modal modal-content fade" tabindex="-1" role="dialog" aira-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h3 id="myModalLabel">Login</h3>
-                </div>
-                <div class="modal-body">
-                    <p>Log in with your Google+ Account</p>
-                </div>
-                <div class="modal-footer">
-                    <!-- Google Plus sign in -->
-                    <div id="signinButton">
-                        <span class="g-signin"
-                            data-scope="openid email"
-                            data-clientid="264350214576-t1sd3hc55nf93u166h157gjm4eaj3su5.apps.googleusercontent.com"
-                            data-redirecturi="postmessage"
-                            data-accesstype="offline"
-                            data-cookiepolicy="single_host_origin"
-                            data-callback="signInCallback"
-                            data-approvalprompt="force">
-                        </span>
-                    </div>
-                    <!--<div id="result"></div>-->
-                    <script>
-                    function signInCallback(authResult) {
-                        if( authResult['code']) {
-                            // Hide the sign-in button now that the user is authorized
-                            $('#signinButton').attr('style', 'display: none');
+            <div id="signInModal" class="modal fade" tabindex="-1" role="dialog" aira-labelledby="signInModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h3 id="signInModalLabel">Sign in to the Beer Catalog</h3>
+                        </div>
+                        <!--<div class="modal-body" id="result">-->
+                        <div class="modal-body">
+                            <!-- Google Plus sign in -->
+                            <p>Sign in with your Google+ Account</p>
+                            <span class="g-signin"
+                                data-scope="openid email"
+                                data-clientid="264350214576-t1sd3hc55nf93u166h157gjm4eaj3su5.apps.googleusercontent.com"
+                                data-redirecturi="postmessage"
+                                data-accesstype="offline"
+                                data-cookiepolicy="single_host_origin"
+                                data-callback="signInCallback"
+                                data-approvalprompt="force">
+                            </span>
+                            <script>
+                            function signInCallback(authResult) {
+                                console.log(authResult);
+                                if( authResult['code']) {
+                                    // Hide the sign-in button now that the user is authorized
+                                    $('#signinButton').attr('style', 'display: none');
 
-                            // Send the one-time-use code to the server, if the server responds,
-                            // write a 'login successful' message to the web page and then redirect
-                            // back to the main page.
-                            $.ajax({
-                                type: 'POST',
-                                url: '/connect?state={{session['state']}}',
-                                processData: false,
-                                data: authResult['code'],
-                                contentType: 'application/octet-stream; charset=utf-8',
-                                success: function(result) {
-                                    // Handle or verify the server response if necessary.
-                                    if (result) {
-                                        //$('#myModal').modal('toggle')
-                                        //$('#result').html('Login Successful!</br>' + result +
-                                        //    '</br>Redirecting...')
-                                        //setTimeout(function() {
-                                            //window.location.href = "/catalog";
-                                            $('#myModal').modal('toggle')
-                                        //}, 4000);
-                                    } else if (authResult['error']) {
-                                        console.log('There was an error: ' + authResult['error']);
-                                    } else {
-                                        $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-                                    }
+                                    // Send the one-time-use code to the server, if the server responds,
+                                    // write a 'login successful' message to the web page and then redirect
+                                    // back to the main page.
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '/connect?state={{session['state']}}',
+                                        processData: false,
+                                        data: authResult['code'],
+                                        contentType: 'application/octet-stream; charset=utf-8',
+                                        success: function(result) {
+                                            // Handle or verify the server response if necessary.
+                                            if (result) {
+                                                $('.modal-body').html('Login Successful!<br>' +
+                                                    '<br>Redirecting...');
+                                                setTimeout(function() {
+                                                    $('#signInModal').modal('toggle');
+                                                    window.location.href = "/catalog"
+                                                }, 3000);
+                                            } else if (authResult['error']) {
+                                                console.log('There was an error: ' + authResult['error']);
+                                            } else {
+                                                $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+                                            }
+                                        }
+                                    });
                                 }
-                            });
-                        }
-                    }
-                    </script>
-                    <!-- End Google Plus sign in -->
+                            }
+                            </script>
+                            <!-- End Google Plus sign in -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
                 </div>
-            </div><!-- #myModal -->
+            </div><!-- #signInModal -->
 
             <div class="row" id="content">
                 {% block content %}
                 {% endblock content %}
             </div><!-- #content -->
 
-
         </div><!-- .container -->
-            
-
-        <!--
-        <footer class="navbar navbar-default navbar-nav-bottom">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                </div>
-            </div>
-        </footer>
-        -->
 
         <footer class="footer">
             <div class="container">

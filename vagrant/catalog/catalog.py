@@ -47,7 +47,6 @@ db = DBSession()
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        #import pdb; pdb.set_trace()
         if 'username' not in session:
             flash('You are not authorized, because you are not logged in.')
             return redirect(url_for('showCatalog', next=request.url))
@@ -68,7 +67,6 @@ def connect():
         # there is a mismatch between these state tokens
         response = make_response(json.dumps('Invalid state parameter'), 401)
         response.headers['Content-Type'] = 'application/json'
-        #import pdb; pdb.set_trace()
         return response
 
     # Proceed and collect the one-time authorization code from the server
@@ -101,7 +99,6 @@ def connect():
     if result.get('error') is not None:
         response = make_response(json.dumps(result.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
-        #import pdb; pdb.set_trace()
         return response
 
     # We now have a working access token. Now let's make sure we have
@@ -115,7 +112,6 @@ def connect():
         response = make_response(
             json.dumps("Token's user ID doesn't match given user ID."), 401)
         response.headers['Content-Type'] = 'application/json'
-        #import pdb; pdb.set_trace()
         return response
 
     # Verify that the access token is valid for this app.
@@ -124,7 +120,6 @@ def connect():
             json.dumps("Token's client ID does not match app's."), 401)
         print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
-        #import pdb; pdb.set_trace()
         return response
 
     # Lastly, check if user is already logged in. In this case return a
@@ -135,16 +130,15 @@ def connect():
     if stored_credentials is not None and gplus_id == stored_gplus_id:
         response = make_response(json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
-        #import pdb; pdb.set_trace()
         return response
 
     # Assuming none of the if-statements for the checks were true, we
     # now have a valid access token, and the user is successfully able
     # to log in to the server. We should store the access token in the
     # user's login-session for later use.
-    session['credentials'] = credentials
+    session['access_token'] = credentials.access_token
     session['gplus_id'] = gplus_id
-    #response = make_response(json.dumps('Successfully connected user'), 200)
+    response = make_response(json.dumps('Successfully connected user'), 200)
 
     # Use the Google Plus API to get some more info about the user.
     # Send off a message with the access token, requesting the user info
@@ -176,7 +170,6 @@ def connect():
     session['family_name'] = data['family_name']
     session['picture'] = data['picture']
     session['email'] = data['email']
-    session['gender'] = data['gender']
     session['provider'] = 'google'
 
     # Check for existing user with this email address (or make a new one
@@ -186,8 +179,7 @@ def connect():
     user = getUserInfo(session['user_id'])
 
     flash("You are now logged in as %s" % session['username'])
-    #import pdb; pdb.set_trace()
-    return redirect(url_for('showCatalog'))
+    return response
 
 
 # Disconnect - Revoke a user's token and resset their session
@@ -195,29 +187,27 @@ def connect():
 @login_required
 def disconnect():
     # Only disconnect a connected user.
-    credentials = session.get('credentials')
-    if credentials is None:
-        # If there is no credentials, there's noone to disconnect from the app
+    access_token = session.get('access_token')
+    if access_token is None:
+        # If there is no access_token, there's noone to disconnect from the app
         response = make_response(json.dumps('Current user is not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     # Execute HTTP GET request to revoke current token.
-    access_token = credentials.access_token
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
 
     if result['status'] == '200':
         # Reset the user's session.
-        del session['credentials']
+        del session['access_token']
         del session['gplus_id']
         del session['username']
         del session['given_name']
         del session['family_name']
         del session['email']
         del session['picture']
-        del session['gender']
         del session['user_id']
         del session['provider']
 
@@ -225,7 +215,6 @@ def disconnect():
         return redirect(url_for('showCatalog'))
     else:
         # For whatever reason, the given token was invalid.
-        #import pdb; pdb.set_trace()
         response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -236,8 +225,7 @@ def createUser(session):
             given_name = session['given_name'],
             family_name = session['family_name'],
             email = session['email'],
-            picture = session['picture'],
-            gender = session['gender'])
+            picture = session['picture'])
     db.add(newUser)
     flash('Added new user.')
     db.commit()
