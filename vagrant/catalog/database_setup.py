@@ -34,11 +34,11 @@ class Category(Base):
     def serialize(self):
         '''Return object data in JSON format'''
         return {
-            'id'    : self.id,
-            'parent_id' : self.parent_id,
-            'name'  : self.name,
-            'description': self.description,
-            'items': [i.serialize for i in self.items]
+            'id':           self.id,
+            'parent_id':    self.parent_id,
+            'name':         self.name,
+            'description':  self.description,
+            'items':        [i.serialize for i in self.items]
         }
 
 
@@ -57,11 +57,11 @@ class Item(Base):
     def serialize(self):
         '''Return object data in JSON format'''
         return {
-            'id'    : self.id,
-            'name'  : self.name,
-            'description': self.description,
-            'category_id': self.category_id,
-            'user_id': self.user_id
+            'id':           self.id,
+            'name':         self.name,
+            'description':  self.description,
+            'category_id':  self.category_id,
+            'user_id':      self.user_id
         }
 
 

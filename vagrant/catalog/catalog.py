@@ -21,14 +21,15 @@ import string
 
 # Needed to handle the code sent back from the callback method
 import httplib2
-from oauth2client.client import flow_from_clientsecrets # creates a flow object from client_secrets.json file
+# flow_from_clientsecrets creates a flow object from client_secrets.json file
+from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 
 import requests
 
 # Credentials for Google OAuth
 GOOGLE_CLIENT_ID = json.loads(
-        open('client_secrets.json', 'r').read())['web']['client_id']
+    open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Beer Catalog"
 
 
@@ -52,6 +53,7 @@ def login_required(f):
             return redirect(url_for('showCatalog', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
+
 
 # Method to do the login, for now only with support for Google Plus
 @app.route('/connect', methods=['POST'])
@@ -84,14 +86,16 @@ def connect():
         credentials = oauth_flow.step2_exchange(auth_code)
     except FlowExchangeError:
         # In case of an error, send the response as a JSON-object.
-        response = make_response(json.dumps('Failed to upgrade the authorization code.'), 401)
+        response = make_response(json.dumps(
+            'Failed to upgrade the authorization code.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     # Check for a valid (working) access token inside of the credentials
     # object.
     access_token = credentials.access_token
-    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' % access_token)
+    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
+           % access_token)
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
     # If there was an error in the access token info, it's invalid, so
@@ -128,7 +132,8 @@ def connect():
     stored_credentials = session.get('credentials')
     stored_gplus_id = session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'), 200)
+        response = make_response(
+            json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -144,7 +149,7 @@ def connect():
     # Send off a message with the access token, requesting the user info
     # allowed by the token-scope, and store it in an object (data).
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
-    params = {'access_token': credentials.access_token, 'alt':'json'}
+    params = {'access_token': credentials.access_token, 'alt': 'json'}
     answer = requests.get(userinfo_url, params=params)
     data = json.loads(answer.text)
     # If successful, this method returns a response body with the
@@ -190,7 +195,8 @@ def disconnect():
     access_token = session.get('access_token')
     if access_token is None:
         # If there is no access_token, there's noone to disconnect from the app
-        response = make_response(json.dumps('Current user is not connected.'), 401)
+        response = make_response(
+            json.dumps('Current user is not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -215,35 +221,38 @@ def disconnect():
         return redirect(url_for('showCatalog'))
     else:
         # For whatever reason, the given token was invalid.
-        response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
+        response = make_response(
+            json.dumps('Failed to revoke token for given user.'), 400)
         response.headers['Content-Type'] = 'application/json'
         return response
 
 
 def createUser(session):
-    newUser = User(username = session['username'],
-            given_name = session['given_name'],
-            family_name = session['family_name'],
-            email = session['email'],
-            picture = session['picture'])
+    newUser = User(
+        username=session['username'],
+        given_name=session['given_name'],
+        family_name=session['family_name'],
+        email=session['email'],
+        picture=session['picture']
+    )
     db.add(newUser)
     flash('Added new user.')
     db.commit()
-    user = db.query(User).filter_by(email = session['email']).one()
+    user = db.query(User).filter_by(email=session['email']).one()
     return user.id
 
 
 def getUserInfo(user_id):
-    user = db.query(User).filter_by(id = user_id).one()
+    user = db.query(User).filter_by(id=user_id).one()
     return user
+
 
 def getUserID(email):
     try:
-        user = db.query(User).filter_by(email = email).one()
+        user = db.query(User).filter_by(email=email).one()
         return user.id
     except:
         return None
-
 
 
 @app.route('/')
@@ -254,21 +263,26 @@ def showCatalog():
     update or delete item info.'''
     # Create a state token to prevent request forgery and store it in
     # the session for later validation.
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-            for x in xrange(32))
+    state = ''.join(random.choice(
+        string.ascii_uppercase + string.digits) for x in xrange(32))
     session['state'] = state
     categories = db.query(Category).all()
 
     latest_items = db.query(Item).order_by('-Item.id').limit(10)
     if 'user_id' not in session:
-        return render_template('pub_catalog.html', categories=categories, latest_items=latest_items)
+        return render_template('pub_catalog.html',
+                               categories=categories,
+                               latest_items=latest_items)
     else:
-        return render_template('catalog.html', categories=categories, latest_items=latest_items)
+        return render_template('catalog.html',
+                               categories=categories,
+                               latest_items=latest_items)
+
 
 @app.route('/catalog.json')
 def showCatalogJSON():
     categories = db.query(Category).all()
-    return jsonify(categories= [c.serialize for c in categories])
+    return jsonify(categories=[c.serialize for c in categories])
 
 
 @app.route('/catalog/<int:category_id>/')
@@ -278,9 +292,10 @@ def showCategory(category_id):
     the items available for that category.'''
     current_category = db.query(Category).filter_by(id=category_id).one()
     categories = db.query(Category).all()
-    items = db.query(Item).filter_by(category_id=category_id).order_by('Item.name')
+    items = db.query(Item).filter_by(
+        category_id=category_id).order_by('Item.name')
     return render_template('category.html', categories=categories,
-            category=current_category, items=items)
+                           category=current_category, items=items)
 
 
 @app.route('/catalog/<int:category_id>/<int:item_id>/')
@@ -296,7 +311,7 @@ def showItem(category_id, item_id):
         return render_template('item.html', category=category, item=item)
 
 
-@app.route('/catalog/items/new/', methods=['GET','POST'])
+@app.route('/catalog/items/new/', methods=['GET', 'POST'])
 @login_required
 def newItem():
     '''After logging in, this page gives the user the ability to add an item
@@ -305,15 +320,17 @@ def newItem():
 
     if request.method == 'POST':
         newItem = Item(
-            name = request.form['name'],
-            category_id = request.form['category_id'],
-            description = request.form['description'],
-            user_id = session['user_id']
+            name=request.form['name'],
+            category_id=request.form['category_id'],
+            description=request.form['description'],
+            user_id=session['user_id']
         )
 
         db.add(newItem)
-        newItemCategory = db.query(Category).filter_by(id=newItem.category_id).one()
-        flash('New beer "%s" has been successfully added to the category "%s". Cheers!' % (newItem.name, newItemCategory.name))
+        newItemCategory = db.query(Category).filter_by(
+            id=newItem.category_id).one()
+        flash('New beer "%s" has been successfully added to the category',
+              '"%s". Cheers!' % (newItem.name, newItemCategory.name))
         db.commit()
 
         return redirect(url_for('showCatalog'))
@@ -325,7 +342,8 @@ def newItem():
 @app.route('/catalog/<item_id>/edit/', methods=['GET', 'POST'])
 @login_required
 def editItem(item_id):
-    '''After logging in, this page gives the user the ability to update the item info.'''
+    '''After logging in, this page gives the user the ability to update the
+    item info.'''
     categories = db.query(Category).all()
     item = db.query(Item).filter_by(id=item_id).one()
 
@@ -346,7 +364,8 @@ def editItem(item_id):
         return redirect(url_for('showCatalog'))
 
     else:
-        return render_template('item_edit.html', categories=categories, item=item)
+        return render_template('item_edit.html',
+                               categories=categories, item=item)
 
 
 @app.route('/catalog/<int:item_id>/delete/', methods=['GET', 'POST'])
@@ -371,4 +390,4 @@ def deleteItem(item_id):
 
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000)
