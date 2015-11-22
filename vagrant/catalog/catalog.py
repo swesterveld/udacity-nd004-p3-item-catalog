@@ -304,9 +304,12 @@ def newItem():
     categories = db.query(Category).all()
 
     if request.method == 'POST':
-        newItem = Item(name = request.form['name'],
-                category_id = request.form['category_id'],
-                description = request.form['description'])
+        newItem = Item(
+            name = request.form['name'],
+            category_id = request.form['category_id'],
+            description = request.form['description'],
+            user_id = session['user_id']
+        )
 
         db.add(newItem)
         newItemCategory = db.query(Category).filter_by(id=newItem.category_id).one()
