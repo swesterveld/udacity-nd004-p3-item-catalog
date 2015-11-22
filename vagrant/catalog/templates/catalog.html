@@ -8,9 +8,9 @@
             <a href="{{ url_for('newItem') }}",>Add Item</a>
             <h2>Latest items</h2>
             <ul>
-            {% for item in latest_items %}
+                {% for item in latest_items %}
                 <li><a href="{{ url_for('showItem', category_id=item.category_id, item_id=item.id) }}">{{item.name}}</a> ({{item.category.name}})</li>
-            {% endfor %}
+                {% endfor %}
             </ul>
         </div>
     </div>

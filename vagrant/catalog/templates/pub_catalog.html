@@ -8,26 +8,12 @@
         <p class="lead">This beer catalog holds information of beers from several categories and styles. You may browse through the data by selecting categories on the top of this page. If you want to add, modify or delete information, you need to <a href="#" data-toggle="modal" data-target="#myModal">log in</a> with your Google+ Account first.</p>
     </div>
     <div class="row">
-        <div class="row">
-            <h4>Latest added items:</h4>
-        </div>
-        <div class="row">
-            <div class="col-lg-6">
-                <ul>
-                    {% for item in latest_items %}
-                    <li>{{ item.name }} - {{ item.category.name }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="col-lg-6">
-                <ul>
-                    {% for item in latest_items %}
-                    <li>{{ item.name }} - {{ item.category.name }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+        <h2>Latest items</h2>
+        <ul>
+            {% for item in latest_items %}
+            <li><a href="{{ url_for('showItem', category_id=item.category.id, item_id=item.id) }}">{{ item.name }}</a> - {{ item.category.name }}</li>
+            {% endfor %}
+        </ul>
     </div>
 </div>
 
