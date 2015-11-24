@@ -8,7 +8,6 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
 
 engine = create_engine('sqlite:///catalog.db')
-# engine = create_engine('sqlite:///catalog.db', assert_unicode=True)
 
 Base.metadata.bind = engine
 
