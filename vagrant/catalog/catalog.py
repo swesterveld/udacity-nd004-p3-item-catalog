@@ -330,8 +330,8 @@ def newItem():
         newItemCategory = db.query(Category).filter_by(
             id=newItem.category_id).one()
         flash((
-            'New beer "{}" has been successfully added to the category "{}". '
-            'Cheers!'.format(newItem.name, newItemCategory.name)
+            u'New beer "{}" has been successfully added to the category "{}". '
+            u'Cheers!'.format(newItem.name, newItemCategory.name)
             ))
         db.commit()
 
