@@ -329,8 +329,10 @@ def newItem():
         db.add(newItem)
         newItemCategory = db.query(Category).filter_by(
             id=newItem.category_id).one()
-        flash('New beer "%s" has been successfully added to the category',
-              '"%s". Cheers!' % (newItem.name, newItemCategory.name))
+        flash((
+            'New beer "{}" has been successfully added to the category "{}". '
+            'Cheers!'.format(newItem.name, newItemCategory.name)
+            ))
         db.commit()
 
         return redirect(url_for('showCatalog'))
