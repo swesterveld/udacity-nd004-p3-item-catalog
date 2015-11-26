@@ -38,7 +38,7 @@ app.debug = True
 app.secret_key = """M}XUZoTl+U3]j`Gk&d5ysi5)}GTIDA?9"""
 
 # Create session and connect to the database
-engine = create_engine('sqlite:///catalog.db')
+engine = create_engine('postgresql+psycopg2://vagrant:@/beercatalog')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 db = DBSession()

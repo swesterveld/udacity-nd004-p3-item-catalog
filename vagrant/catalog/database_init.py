@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from database_setup import Base, User, Category, Item
 
-engine = create_engine('sqlite:///catalog.db')
+engine = create_engine('postgresql+psycopg2://vagrant:@/beercatalog')
 
 Base.metadata.bind = engine
 
