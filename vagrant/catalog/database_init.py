@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from database_setup import Base, User, Category, Item
 
-engine = create_engine('postgresql+psycopg2://vagrant:@/beercatalog')
+engine = create_engine('postgresql+psycopg2://connoisseur:michaeljackson@localhost:5432/beercatalog')
 
 Base.metadata.bind = engine
 
