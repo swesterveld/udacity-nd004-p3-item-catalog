@@ -95,13 +95,15 @@ categories = (
         'id': 9,
         'name': u'Abt/Quadrupel',
         'description': (
-            u'''Belgian-style ales seldom fit neatly into classic beer '''
-            u'''styles, but this category represents those ales under '''
-            u'''approximately 7% abv that do not fit other categories. '''
-            u'''Colour ranges from golden to deep amber, with the occasional '''
-            u'''example coming in darker. Body tends to be light to medium, '''
-            u'''with a wide range of hop and malt levels. Yeastiness and '''
-            u'''acidity may also be present.'''),
+            u'''Abt, or quadrupel, is the name given to ultra-strong Trappist and '''
+            u'''abbey ales. The name Abt was pioneered to describe Westvleteren '''
+            u'''and the beer that would become St. Bernardus. Quadrupel was '''
+            u'''pioneered by La Trappe. Abts are the darker of the two, with more '''
+            u'''rich, deep fruity notes. Quads are paler, with corresponding '''
+            u'''peachy notes. Neither have much in the way of hop, and both are '''
+            u'''very strong and malty. Though both are bottle-conditioned, abts '''
+            u'''trend more towards yeastiness. Alcohol is very high (10+% abv) for '''
+            u'''both.'''),
         'parent_id': 1
     },
     {
