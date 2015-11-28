@@ -1113,11 +1113,60 @@ items = (
     },
     {
         'id': 6,
-        'name': u'Just a Beer',
-        'description': 'Just a description for just a beer.',
-        'category_id': 10,
+        'name': u'Toppling Goliath Kentucky Brunch',
+        'description': (
+            u'''This beer is the real McCoy. Barrel aged and crammed with coffee, '''
+            u'''none other will stand in it’s way. Sought out for being '''
+            u'''delicious, it is notoriously difficult to track down. If you can '''
+            u'''find one, shoot to kill, because it is definitely wanted... dead '''
+            u'''or alive.'''),
+        'category_id': 47,
         'user_id': 1
-    }
+    },
+    {
+        'id': 7,
+        'name': u'''Toppling Goliath Mornin' Delight''',
+        'description': (
+            u'''A huge Imperial Stout with an explosive espresso aroma followed '''
+            u'''by strong notes of maple syrup and vanilla.'''),
+        'category_id': 47,
+        'user_id': 1
+    },
+    {
+        'id': 8,
+        'name': u'''Cigar City Hunahpu's Imperial Stout - Double Barrel Aged''',
+        'description': (
+            u'''50% aged in Rum barrels, 50% aged in Apple Brandy barrels'''),
+        'category_id': 47,
+        'user_id': 1
+    },
+    {
+        'id': 9,
+        'name': u'''Three Floyds Dark Lord Russian Imperial Stout (Bourbon Barrel
+                Aged)''',
+        'description': (
+            u'''Dark Lord aged in a variety of Bourbon barrels including Woodford '''
+            u'''Reserve and Heaven Hill. This listing is specifically for Bourbon '''
+            u'''barrel aged variants of Dark Lord. NOT Brandy.'''),
+        'category_id': 47,
+        'user_id': 1
+    },
+    {
+        'id': 10,
+        'name': u'''Emelisse White Label Barley Wine (Heaven Hill BA)''',
+        'description': '',
+        'category_id': 25,
+        'user_id': 1
+    },
+    {
+        'id': 11,
+        'name': u'''De Molen Hel & Verdoemenis 666''',
+        'description': (
+            u'''Batch 666 was H&V with added wood chips soaked in a 40 year old '''
+            u'''cognac.'''),
+        'category_id': 47,
+        'user_id': 1
+    },
 )
 
 for i in items:
