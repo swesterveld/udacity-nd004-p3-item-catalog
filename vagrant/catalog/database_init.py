@@ -26,7 +26,6 @@ users = (
 )
 
 for u in users:
-    print 'adding user: %s' % u
     user = User(id=u['id'],
                 username=u['username'],
                 family_name=u['family_name'],
@@ -36,8 +35,6 @@ for u in users:
     session.add(user)
 
 session.commit()
-
-print 'added users!'
 
 categories = (
     {
@@ -1036,21 +1033,15 @@ categories = (
 )
 
 for c in categories:
-    print 'adding category: %s' % c
     category = Category(id=c['id'], name=c['name'])
     if 'description' in c.keys():
-        print '    description: %s' % c['description']
         category.description = c['description']
     if 'parent_id' in c.keys():
         parent = session.query(Category).filter_by(id=c['parent_id']).one()
-        print '    parent: %s' % parent
         category.parent_id = parent.id
-
     session.add(category)
 
 session.commit()
-
-print 'added categories!'
 
 items = (
     {
@@ -1130,10 +1121,8 @@ items = (
 )
 
 for i in items:
-    print 'adding item: %s' % i
     item = Item(id=i['id'], name=i['name'],
                 description=i['description'], category_id=i['category_id'])
-
     session.add(item)
 
 session.commit()
