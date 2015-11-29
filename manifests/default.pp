@@ -1,20 +1,9 @@
-#exec { 'build database':
-#    command => 'python database_init.py',
-#    cwd     => '/vagrant/catalog',
-#    environment => ['LC_ALL=en_US.UTF-8', 'LANG=en_US.UTF-8', 'LC_CTYPE=UTF-8'],
-#    path    => '/usr/bin',
-#    user    => 'vagrant',
-#    notify  => Exec['start catalog'],
-#}
-#exec { 'start catalog':
-#    command => 'python /vagrant/catalog/catalog.py',
-#    cwd     => '/vagrant/catalog',
-#    unless  => 'pgrep -lu vagrant | grep python',
-#    path    => '/usr/bin',
-#    user    => 'vagrant',
-#    subscribe => Exec['build database'],
-#    refreshonly => true,
-#}
+exec { 'update repository':
+    command => 'sudo apt-get update',
+    path => ['/usr/bin/'],
+    logoutput => 'true',
+    user => 'vagrant',
+}
 
 $deb_packages = [
     'postgresql',
@@ -31,6 +20,7 @@ $pypi_packages = [
 
 package { $deb_packages:
     ensure => present,
+    require => Exec['update repository'],
 }
 
 package { $pypi_packages:
