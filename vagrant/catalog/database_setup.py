@@ -9,7 +9,7 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'user'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String, nullable=False)
     given_name = Column(String, nullable=True)
     family_name = Column(String, nullable=True)
@@ -23,7 +23,7 @@ class Category(Base):
     category.'''
     __tablename__ = 'category'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
     parent_id = Column(Integer, ForeignKey('category.id'), nullable=True)
@@ -45,7 +45,7 @@ class Category(Base):
 class Item(Base):
     __tablename__ = 'item'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     category_id = Column(Integer, ForeignKey('category.id'))

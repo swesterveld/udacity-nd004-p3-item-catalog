@@ -17,8 +17,7 @@ session = DBSession()
 if len(session.query(User).all()) == 0:
     users = (
         {
-            'id': 1,
-            'username': u'Sil Westerveld',
+            'username': u'Sil Westerveld',  # id=1
             'family_name': u'Westerveld',
             'given_name': u'Sil',
             'email': u'g@silwesterveld.com',
@@ -27,44 +26,46 @@ if len(session.query(User).all()) == 0:
     )
 
     for u in users:
-        user = User(id=u['id'],
-                    username=u['username'],
+        user = User(username=u['username'],
                     family_name=u['family_name'],
                     given_name=u['given_name'],
                     email=u['email'],
                     picture=u['picture'])
         session.add(user)
-
     session.commit()
 
 if len(session.query(Category).all()) == 0:
+    # First add main categories to the database.
+    main_categories = (
+        {
+            'name': u'Belgian-Style Ales'  # id=1
+        },
+        {
+            'name': u'Sour Beer'  # id=2
+        },
+        {
+            'name': u'Anglo-American Ales'  # id=3
+        },
+        {
+            'name': u'Stouts and Porters'  # id=4
+        },
+        {
+            'name': u'Wheat Beer'  # id=5
+        },
+        {
+            'name': u'Lager'  # id=6
+        }
+    )
+
+    for c in main_categories:
+        category = Category(name=c['name'])
+        session.add(category)
+    session.commit()
+
+    # After main categories have been added,
+    # add (sub)categories to the database.
     categories = (
         {
-            'id': 1,
-            'name': u'Belgian-Style Ales'
-        },
-        {
-            'id': 2,
-            'name': u'Sour Beer'
-        },
-        {
-            'id': 3,
-            'name': u'Anglo-American Ales'
-        },
-        {
-            'id': 4,
-            'name': u'Stouts and Porters'
-        },
-        {
-            'id': 5,
-            'name': u'Wheat Beer'
-        },
-        {
-            'id': 6,
-            'name': u'Lager'
-        },
-        {
-            'id': 7,
             'name': u'Abbey Dubbel',
             'description': (
                 u'''These are dark, malty, yeasty strong ales in the '''
@@ -76,7 +77,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 1
         },
         {
-            'id': 8,
             'name': u'Abbey Tripel',
             'description': (
                 u'''Like other abbey ales, Tripels are strong, yeasty-malty '''
@@ -93,7 +93,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 1
         },
         {
-            'id': 9,
             'name': u'Abt/Quadrupel',
             'description': (
                 u'''Abt, or quadrupel, is the name given to ultra-strong '''
@@ -109,7 +108,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 1
         },
         {
-            'id': 10,
             'name': u'Belgian Ale',
             'description': (
                 u'''Belgian-style ales seldom fit neatly into classic beer '''
@@ -123,7 +121,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 1
         },
         {
-            'id': 11,
             'name': u'Belgian Strong Ale',
             'description': (
                 u'''Belgian Strong Ales can vary from pale to dark brown in '''
@@ -136,7 +133,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 1
         },
         {
-            'id': 12,
             'name': u'Bière de Garde',
             'description': (
                 u'''A traditional classification for the farmhouse ales of '''
@@ -150,7 +146,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 1
         },
         {
-            'id': 13,
             'name': u'Saison',
             'description': (
                 u'''Fruity esters dominate the aroma. Clarity is good with '''
@@ -161,7 +156,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 1
         },
         {
-            'id': 14,
             'name': u'Berliner Weisse',
             'description': (
                 u'''Very wheaty, very sour style of Berlin. Berliner weisse '''
@@ -173,7 +167,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 2
         },
         {
-            'id': 15,
             'name': u'Lambic Style - Faro',
             'description': (
                 u'''Faro is a lambic blend with the addition of sugar. '''
@@ -185,7 +178,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 2
         },
         {
-            'id': 16,
             'name': u'Lambic Style - Fruit',
             'description': (
                 u'''Lambics are wheat beers made with stale hops and '''
@@ -203,7 +195,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 2
         },
         {
-            'id': 17,
             'name': u'Lambic Style - Gueuze',
             'description': (
                 u'''Gueuze is a blend of young and old lambic. The yeasts '''
@@ -223,7 +214,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 2
         },
         {
-            'id': 18,
             'name': u'Lambic Style - Unblended',
             'description': (
                 u'''Unblended lambic is the purest form of lambic. This '''
@@ -238,7 +228,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 2
         },
         {
-            'id': 19,
             'name': u'Sour Red/Brown',
             'description': (
                 u'''The sour red/brown beers of Flanders can be considered '''
@@ -256,7 +245,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 2
         },
         {
-            'id': 20,
             'name': u'Sour/Wild Ale',
             'description': (
                 u'''Sour/Wild is a category encompassing a myriad of '''
@@ -268,7 +256,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 2
         },
         {
-            'id': 21,
             'name': u'Altbier',
             'description': (
                 u'''Well hopped and malty with copper to dark-brown color, '''
@@ -279,7 +266,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 22,
             'name': u'Amber Ale',
             'description': (
                 u'''A style without definition, amber ales range from '''
@@ -291,7 +277,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 23,
             'name': u'American Pale Ale',
             'description': (
                 u'''American Pale Ales are light in color, ranging from '''
@@ -304,7 +289,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 24,
             'name': u'American Strong Ale',
             'description': (
                 u'''Not a style, per se, but a catch-all category to '''
@@ -318,7 +302,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 25,
             'name': u'Barley Wine',
             'description': (
                 u'''A Barley Wine is a strong, top-fermenting ale, with an '''
@@ -330,7 +313,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 26,
             'name': u'Bitter',
             'description': (
                 u'''A gold to copper color, low carbonation and medium to '''
@@ -340,7 +322,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 27,
             'name': u'Brown Ale',
             'description': (
                 u'''Color ranges from reddish-brown to dark brown. Beers '''
@@ -351,7 +332,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 28,
             'name': u'Cream Ale',
             'description': (
                 u'''A mild, pale, light-bodied ale, made using a warm '''
@@ -361,7 +341,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 29,
             'name': u'English Pale Ale',
             'description': (
                 u'''Classic English Pale Ales are not pale but rather are '''
@@ -381,7 +360,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 30,
             'name': u'English Strong Ale',
             'description': (
                 u'''Malty, with complex fruity esters. Some oxidative notes '''
@@ -398,7 +376,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 31,
             'name': u'Golden Ale/Blond Ale',
             'description': (
                 u'''There are a few different types of blond ale. The first '''
@@ -416,7 +393,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 32,
             'name': u'Imperial IPA',
             'description': (
                 u'''Imperial IPA (also called Double or Triple IPA) is a '''
@@ -430,7 +406,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 33,
             'name': u'India Pale Ale (IPA)',
             'description': (
                 u'''India Pale Ale, the modern version of which has largely '''
@@ -444,7 +419,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 34,
             'name': u'Irish Ale',
             'description': (
                 u'''The red ales of Ireland have a gentle maltiness, '''
@@ -458,7 +432,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 35,
             'name': u'Kölsch',
             'description': (
                 u'''Golden, top-fermented style native to Köln, Germany. '''
@@ -472,7 +445,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 36,
             'name': u'Mild Ale',
             'description': (
                 u'''Malt accented, typically little or no hop flavour or '''
@@ -488,7 +460,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 37,
             'name': u'Old Ale',
             'description': (
                 u'''Old Ale is a simple enough style to figure out. At '''
@@ -505,7 +476,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 38,
             'name': u'Premium Bitter/ESB',
             'description': (
                 u'''In England, many breweries have a number of bitters in '''
@@ -525,7 +495,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 39,
             'name': u'Scotch Ale',
             'description': (
                 u'''Scotch Ale was the name given to a strong pale ale from '''
@@ -544,7 +513,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 40,
             'name': u'Scottish Ale',
             'description': (
                 u'''Scottish ales are generally dark, malty, full-bodied '''
@@ -559,7 +527,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 41,
             'name': u'Session IPA',
             'description': (
                 u'''he term Session IPA describes a category of beers '''
@@ -579,7 +546,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 3
         },
         {
-            'id': 42,
             'name': u'Baltic Porter',
             'description': (
                 u'''The historical remnants of the 19th c. Baltic trade in '''
@@ -592,7 +558,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 4
         },
         {
-            'id': 43,
             'name': u'Black IPA',
             'description': (
                 u'''An emerging beer style roughly defined as a beer with '''
@@ -606,7 +571,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 4
         },
         {
-            'id': 44,
             'name': u'Dry Stout',
             'description': (
                 u'''The "Irish-style" stout is typically a low-gravity '''
@@ -620,7 +584,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 4
         },
         {
-            'id': 45,
             'name': u'Foreign Stout',
             'description': (
                 u'''Foreign Stout began with the beer that would become '''
@@ -639,7 +602,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 4
         },
         {
-            'id': 46,
             'name': u'Imperial Porter',
             'description': (
                 u'''Imperial (extra-strong) porters fall in between the '''
@@ -650,7 +612,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 4
         },
         {
-            'id': 47,
             'name': u'Imperial Stout',
             'description': (
                 u'''Imperial stouts are usually extremely dark brown to '''
@@ -662,7 +623,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 4
         },
         {
-            'id': 48,
             'name': u'Porter',
             'description': (
                 u'''Black or chocolate malt gives the porter its dark brown '''
@@ -676,7 +636,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 4
         },
         {
-            'id': 49,
             'name': u'Stout',
             'description': (
                 u'''A stout is made with dark roasted malts which results '''
@@ -693,7 +652,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 4
         },
         {
-            'id': 50,
             'name': u'Sweet Stout',
             'description': (
                 u'''Dark brown to black in colour. Sweet stouts come in two '''
@@ -707,7 +665,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 4
         },
         {
-            'id': 51,
             'name': u'Dunkelweizen',
             'description': (
                 u'''A dark take on the German wheat theme, dunkelweizens '''
@@ -724,7 +681,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 5
         },
         {
-            'id': 52,
             'name': u'German Hefeweizen',
             'description': (
                 u'''Depending on the style can range from pale and light '''
@@ -734,7 +690,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 5
         },
         {
-            'id': 53,
             'name': u'German Kristallweizen',
             'description': (
                 u'''Kristalweizens are the third member of the German Wheat '''
@@ -749,7 +704,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 5
         },
         {
-            'id': 54,
             'name': u'Grodziskie/Gose/Lichtenhainer',
             'description': (
                 u'''Sour wheat beers were common in many parts of medieval '''
@@ -770,7 +724,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 5
         },
         {
-            'id': 55,
             'name': u'Weizen Bock',
             'description': (
                 u'''Strong, dark wheat beers, typically with a high ester '''
@@ -779,7 +732,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 5
         },
         {
-            'id': 56,
             'name': u'Wheat Ale',
             'description': (
                 u'''Golden to light amber in color, the body is light to '''
@@ -790,7 +742,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 5
         },
         {
-            'id': 57,
             'name': u'Witbier',
             'description': (
                 u'''Witbier, also known as Belgian White, is a style of '''
@@ -803,7 +754,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 5
         },
         {
-            'id': 58,
             'name': u'Amber Lager/Vienna',
             'description': (
                 u'''Your typical macrobrewed Dark Lager, often rendered '''
@@ -823,7 +773,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 59,
             'name': u'California Common',
             'description': (
                 u'''Style originating in 18th century California, where '''
@@ -834,7 +783,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 60,
             'name': u'Czech Pilsner (Světlý)',
             'description': (
                 u'''Hallmarked by the generous use of the Saaz hop, '''
@@ -850,7 +798,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 61,
             'name': u'Doppelbock',
             'description': (
                 u'''Doppel means double and while these are stronger brews '''
@@ -861,7 +808,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 62,
             'name': u'Dortmunder/Helles',
             'description': (
                 u'''These two styles are closely related, the former '''
@@ -875,7 +821,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 63,
             'name': u'Dunkel/Tmavý',
             'description': (
                 u'''Copper to dark brown lager common in Germany and the '''
@@ -892,7 +837,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 64,
             'name': u'Dunkler Bock',
             'description': (
                 u'''The dark Bock has a deep copper to dark brown color. '''
@@ -902,7 +846,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 65,
             'name': u'Eisbock',
             'description': (
                 u'''A stronger version of Doppelbock. Deep copper to black. '''
@@ -912,7 +855,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 66,
             'name': u'Heller Bock',
             'description': (
                 u'''The Heller Bock is primarily a malty beer from the '''
@@ -925,7 +867,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 67,
             'name': u'Imperial Pils/Strong Pale Lager',
             'description': (
                 u'''A catch-all for strong, sometimes hoppy lagers that '''
@@ -941,7 +882,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 68,
             'name': u'Malt Liquor',
             'description': (
                 u'''Strong, alcoholic-tasting, often poorly made strong '''
@@ -952,7 +892,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 69,
             'name': u'Oktoberfest/Märzen',
             'description': (
                 u'''Oktoberfest is a German festival dating from 1810, and '''
@@ -972,7 +911,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 70,
             'name': u'Pale Lager',
             'description': (
                 u'''The color of pale lager ranges from light bronze to '''
@@ -990,7 +928,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 71,
             'name': u'Pilsener',
             'description': (
                 u'''While the definition of pilsner is open to much debate '''
@@ -1005,7 +942,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 72,
             'name': u'Polotmavý',
             'description': (
                 u'''This is the amber lager style of the Czech Republic. '''
@@ -1017,7 +953,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 73,
             'name': u'Premium Lager',
             'description': (
                 u'''A beer that straddles between the mainstream Pale Lager '''
@@ -1038,7 +973,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 74,
             'name': u'Radler/Shandy',
             'description': (
                 u'''A mix of a sweet soft drink or juice -- typically lemon '''
@@ -1052,7 +986,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 75,
             'name': u'Schwarzbier',
             'description': (
                 u'''Dark brown to black. Medium body. Roasted malt evident. '''
@@ -1062,7 +995,6 @@ if len(session.query(Category).all()) == 0:
             'parent_id': 6
         },
         {
-            'id': 76,
             'name': u'Zwickel/Keller/Landbier',
             'description': (
                 u'''Three related lager styles most common in Franconia. '''
@@ -1081,20 +1013,19 @@ if len(session.query(Category).all()) == 0:
     )
 
     for c in categories:
-        category = Category(id=c['id'], name=c['name'])
+        category = Category(name=c['name'])
         if 'description' in c.keys():
             category.description = c['description']
         if 'parent_id' in c.keys():
             parent = session.query(Category).filter_by(id=c['parent_id']).one()
             category.parent_id = parent.id
         session.add(category)
-
     session.commit()
 
 if len(session.query(Item).all()) == 0:
+    # Add some items as fixtures to start with
     items = (
         {
-            'id': 1,
             'name': u'Westmalle Dubbel',
             'description': (
                 u'''A reddish brown trappist ale, malty and fruit, '''
@@ -1107,7 +1038,6 @@ if len(session.query(Item).all()) == 0:
             'user_id': 1
         },
         {
-            'id': 2,
             'name': u'Tripel Karmeliet',
             'description': (
                 u'''First brewed 1996; claimed to be based on a recipe from '''
@@ -1125,7 +1055,6 @@ if len(session.query(Item).all()) == 0:
             'user_id': 1
         },
         {
-            'id': 3,
             'name': u'Westmalle Tripel',
             'description': (
                 u'''A strong, dry and spicy trappist ale. The product of a '''
@@ -1139,7 +1068,6 @@ if len(session.query(Item).all()) == 0:
             'user_id': 1
         },
         {
-            'id': 4,
             'name': u'Orval',
             'description': (
                 u'''In contrast to all the others, the Orval Trappist '''
@@ -1154,7 +1082,6 @@ if len(session.query(Item).all()) == 0:
             'user_id': 1
         },
         {
-            'id': 5,
             'name': u'Westvleteren Blond',
             'description': (
                 u'''Westvleteren Blond is the basic beer for the monks' own '''
@@ -1165,7 +1092,6 @@ if len(session.query(Item).all()) == 0:
             'user_id': 1
         },
         {
-            'id': 6,
             'name': u'Toppling Goliath Kentucky Brunch',
             'description': (
                 u'''This beer is the real McCoy. Barrel aged and crammed '''
@@ -1177,7 +1103,6 @@ if len(session.query(Item).all()) == 0:
             'user_id': 1
         },
         {
-            'id': 7,
             'name': u'''Toppling Goliath Mornin' Delight''',
             'description': (
                 u'''A huge Imperial Stout with an explosive espresso aroma '''
@@ -1186,7 +1111,6 @@ if len(session.query(Item).all()) == 0:
             'user_id': 1
         },
         {
-            'id': 8,
             'name': (
                 u'''Cigar City Hunahpu's Imperial Stout - Double Barrel '''
                 u'''Aged'''),
@@ -1197,7 +1121,6 @@ if len(session.query(Item).all()) == 0:
             'user_id': 1
         },
         {
-            'id': 9,
             'name': (
                 u'''Three Floyds Dark Lord Russian Imperial Stout (Bourbon '''
                 u'''Barrel Aged)'''),
@@ -1210,14 +1133,12 @@ if len(session.query(Item).all()) == 0:
             'user_id': 1
         },
         {
-            'id': 10,
             'name': u'''Emelisse White Label Barley Wine (Heaven Hill BA)''',
             'description': '',
             'category_id': 25,
             'user_id': 1
         },
         {
-            'id': 11,
             'name': u'''De Molen Hel & Verdoemenis 666''',
             'description': (
                 u'''Batch 666 was H&V with added wood chips soaked in a 40 '''
@@ -1227,9 +1148,9 @@ if len(session.query(Item).all()) == 0:
         },
     )
 
+    # Add all items above, 'owned' by the only user currently in the database.
     for i in items:
-        item = Item(id=i['id'], name=i['name'],
-                    description=i['description'], category_id=i['category_id'])
+        item = Item(name=i['name'], description=i['description'],
+                    category_id=i['category_id'], user_id=i['user_id'])
         session.add(item)
-
     session.commit()
