@@ -1,7 +1,20 @@
 These are the references I've used for completing the project.
 
-* PostgreSQL Documentation for help on database queries:
+* PostgreSQL Puppet module by Puppet Labs:
+  https://forge.puppetlabs.com/puppetlabs/postgresql
+
+* PostgreSQL database:
   http://www.postgresql.org/docs/9.3/static/index.html
 
-* For help on using Psycopg, the PostgreSQL database adapter for Python:
-  http://initd.org/psycopg/docs/index.html
+* The Python Debugger pdb:
+  https://docs.python.org/2/library/pdb.html
+  http://web.stanford.edu/class/physics91si/2013/handouts/Pdb_Commands.pdf
+
+* String formatting in Python:
+  https://pyformat.info/
+
+* Bootstrap:
+  http://getbootstrap.com/components/
+
+* Mozilla Developer Network:
+  https://developer.mozilla.org/en/docs/Web/HTML/Element/optgroup
