@@ -292,8 +292,7 @@ def showCategory(category_id):
     the items available for that category.'''
     current_category = db.query(Category).filter_by(id=category_id).one()
     categories = db.query(Category).all()
-    items = db.query(Item).filter_by(
-        category_id=category_id).order_by('Item.name')
+    items = current_category.items
     return render_template('category.html', categories=categories,
                            category=current_category, items=items)
 
