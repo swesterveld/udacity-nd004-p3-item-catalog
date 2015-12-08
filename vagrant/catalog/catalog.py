@@ -183,7 +183,7 @@ def connect():
     session['user_id'] = user_id
     user = getUserInfo(session['user_id'])
 
-    flash("You are now logged in as %s" % session['username'])
+    flash("You are now logged in as %s" % user.username)
     return response
 
 
