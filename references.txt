@@ -6,6 +6,9 @@ These are the references I've used for completing the project.
 * PostgreSQL database:
   http://www.postgresql.org/docs/9.3/static/index.html
 
+* SQLAlchemy ORM back references:
+  http://docs.sqlalchemy.org/en/latest/orm/relationship_api.html#sqlalchemy.orm.backref
+
 * The Python Debugger pdb:
   https://docs.python.org/2/library/pdb.html
   http://web.stanford.edu/class/physics91si/2013/handouts/Pdb_Commands.pdf
