@@ -15,6 +15,7 @@ These are the references I've used for completing the project.
 
 * String formatting in Python:
   https://pyformat.info/
+  http://stackoverflow.com/questions/1874592/pep8-80-characters-big-strings
 
 * Jinja2 length() filter:
   http://jinja.pocoo.org/docs/dev/templates/#list-of-builtin-filters
