@@ -13,6 +13,9 @@ These are the references I've used for completing the project.
 * String formatting in Python:
   https://pyformat.info/
 
+* Jinja2 length() filter:
+  http://jinja.pocoo.org/docs/dev/templates/#list-of-builtin-filters
+
 * Bootstrap:
   http://getbootstrap.com/components/
 
