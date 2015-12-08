@@ -5,10 +5,10 @@
 <div class="container">
     <div class="jumbotron">
         <h1>Full Stack Beer Catalog</h1>
-        <p class="lead">This beer catalog holds information of beers from several categories and styles. You may browse through the data by selecting categories on the top of this page. If you want to add, modify or delete information, you need to <a href="#" data-toggle="modal" data-target="#myModal">log in</a> with your Google+ Account first.</p>
+        <p class="lead">This beer catalog holds information of beers from several categories and styles. You may freely browse through the data by selecting categories on the top of this page. If you want to add, modify or delete information, you need to sign in with your Google+ Account first.</p>
     </div>
     <div class="row">
-        <h2>Latest items</h2>
+        <h2>Latest 10 items</h2>
         <ul>
             {% for item in latest_items %}
             <li><a href="{{ url_for('showItem', category_id=item.category.id, item_id=item.id) }}">{{ item.name }}</a> - {{ item.category.name }}</li>
